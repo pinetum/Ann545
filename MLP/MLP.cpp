@@ -17,6 +17,7 @@ MLP::MLP(wxEvtHandler* pParent)
     m_dInitalLearningRate = 0.3;
     m_dMinLearningRate = 0.05;
     m_nLearningRateShift = 4000;
+    m_nTotalIteration = 4000;
     m_bMomentum  = false;
     m_dDesiredOutput_rescale = 0.1;
 }
@@ -33,6 +34,7 @@ wxThread::ExitCode MLP::Entry(){
     wxQueueEvent(m_pHandler, evt_start);
     if(!m_data_input.data)
     {
+        
         evt_end = new wxThreadEvent(wxEVT_COMMAND_MLP_COMPLETE);
         evt_end->SetString("[MLP]Error: input Matrix data empty");
         wxQueueEvent(m_pHandler, evt_end);
@@ -53,12 +55,26 @@ wxThread::ExitCode MLP::Entry(){
     writeMat("./inital_W2.txt", &m_weight_l2);
     writeMat("./inital_W3.txt", &m_weight_l3);
     
+    for(int i_iteration = 0; i_iteration < m_nTotalIteration; i_iteration++)
+    {
+        
+        for(int i_dataRows = 0; i_dataRows < m_data_scaled2train.rows; i_dataRows++)
+        {
+            cv::Mat input = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(0, m_nInputs));
+            
+            cv::Mat response = input*m_weight_l1*m_weight_l2*m_weight_l3;
+            
+            
+            evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE);
+            evt_update->SetString(wxString::Format("%.2f, %.2f", response.at<double>(0,0), response.at<double>(0,1)));
+            wxQueueEvent(m_pHandler, evt_update);
+        }
+    }
+    
+    
     
     for(int i = 0; i < MLP_TOTAL_ITERATION; i++)
     {
-        
-        
-        
         
         wxThread::This()->Sleep(1000);
         evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE_PG);
@@ -88,7 +104,11 @@ void MLP::dataScale()
     m_data_scaled2train.create(m_data_input.rows, m_nInputs + m_nClasses, CV_64FC1);
     for(int i =0; i < m_nInputs; i++)
     {
+        // solution 1
         cv::normalize(m_data_input.col(i), m_data_scaled2train.col(i), 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
+        // solution 2 (save min and max)
+        //double min, max;
+        //cv::minMaxLoc(m_data_input.col(i), &min, &max);
     }
     ///////-----desired oupput-------///////
     

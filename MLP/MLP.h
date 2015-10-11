@@ -27,6 +27,7 @@ public:
     int m_nInputs;
     int m_nClasses;
     int m_nLearningRateShift;
+    int m_nTotalIteration;
     
     bool m_bMomentum;
     double m_dDesiredOutput_rescale;
@@ -34,10 +35,10 @@ public:
     double m_dMinLearningRate;
     
     double getAccuracy();
-    double getSigmod(double x, double slope)
+    double getSigmod_tan(double x, double slope)
         { return (1-2*exp(-2*x*slope))/(1+2*exp(-2*x*slope));}
-    double getSigmodDerivative(double x, double slope)
-        { return slope*(1+getSigmod(x, slope))*(1-getSigmod(x, slope));}
+    double getSigmodDerivative_tan(double x, double slope)
+        { return slope*(1+getSigmod_tan(x, slope))*(1-getSigmod_tan(x, slope));}
     double getLearningRate(int i_iteration, double slope)
         { return (m_dInitalLearningRate - m_dMinLearningRate) / (1+exp(slope*(i_iteration - m_nLearningRateShift)) ) + m_dMinLearningRate;}
     void openSampleFile(wxString fileName);
