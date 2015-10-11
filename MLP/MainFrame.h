@@ -17,6 +17,10 @@ public:
     wxString getTimer();
     void startTimer();
     void stopTimer(wxString TimerName);
+    void OnMlpStart(wxThreadEvent& evt);
+    void OnMlpUpdate(wxThreadEvent& evt);
+    void OnMlpComplete(wxThreadEvent& evt);
+    void OnMlpUpdatePg(wxThreadEvent& evt);
 protected:
     virtual void OnLoadModel(wxCommandEvent& event);
     virtual void OnUpdateUI(wxUpdateUIEvent& event);

@@ -2,6 +2,14 @@
 #include <wx/aboutdlg.h>
 #include <wx/filedlg.h>
 
+
+wxDEFINE_EVENT(wxEVT_COMMAND_MLP_START,        wxThreadEvent);
+wxDEFINE_EVENT(wxEVT_COMMAND_MLP_UPDATE,       wxThreadEvent);
+wxDEFINE_EVENT(wxEVT_COMMAND_MLP_UPDATE_PG,    wxThreadEvent);
+wxDEFINE_EVENT(wxEVT_COMMAND_MLP_COMPLETE,     wxThreadEvent);
+
+
+
 MainFrame *MainFrame::m_pThis = NULL;
 
 MainFrame::MainFrame(wxWindow* parent)
@@ -11,6 +19,10 @@ MainFrame::MainFrame(wxWindow* parent)
     m_MLP               = NULL;
     SetSize(500, 300);
     Center();
+    Bind(wxEVT_COMMAND_MLP_START, &MainFrame::OnMlpStart, this);
+    Bind(wxEVT_COMMAND_MLP_UPDATE, &MainFrame::OnMlpUpdate, this);
+    Bind(wxEVT_COMMAND_MLP_UPDATE_PG, &MainFrame::OnMlpUpdatePg, this);
+    Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
 }
 
 MainFrame::~MainFrame()
@@ -18,6 +30,30 @@ MainFrame::~MainFrame()
     if(m_MLP !=NULL)
         delete m_MLP;
 }
+void MainFrame::OnMlpStart(wxThreadEvent& evt)
+{
+    startTimer();
+    showMessage("MLP start Running..");
+}
+void MainFrame::OnMlpUpdate(wxThreadEvent& evt)
+{
+    showMessage(evt.GetString());
+}
+void MainFrame::OnMlpComplete(wxThreadEvent& evt)
+{
+    stopTimer("MLP Stop");
+    m_MLP = NULL;
+}
+void MainFrame::OnMlpUpdatePg(wxThreadEvent& evt)
+{
+    int iteration = evt.GetInt() + 1 ;
+    
+    m_gaugePg->SetValue(100*iteration/MLP_TOTAL_ITERATION);
+    m_staticTextPg->SetLabel(wxString::Format("%d/%d", iteration, MLP_TOTAL_ITERATION));
+    
+}
+
+
 void MainFrame::showMessage(wxString msg){
 		m_pThis->m_richTextCtrl->AppendText(msg<<"\n");
 		int last_pos = m_pThis->m_richTextCtrl->GetLastPosition();
@@ -86,16 +122,14 @@ void MainFrame::OnLoadData(wxCommandEvent& event)
         MainFrame::showMessage("[LoadData]File error");
     else
     {
-        m_MLP = new MLP();
+        m_MLP = new MLP(this);
         m_MLP->openSampleFile(pathName);
     }
 }
 void MainFrame::OnTrainModel(wxCommandEvent& event)
 {
-    startTimer();
-    if(!m_MLP->train())
-        showMessage(m_MLP->getErrorMessage());
-    stopTimer("MLP Training");
+    if(!m_MLP->IsRunning())
+        m_MLP->Run();
 }
 void MainFrame::OnValidate(wxCommandEvent& event)
 {
@@ -119,7 +153,15 @@ void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
     if(m_MLP == NULL)
         event.Enable(false);
     else
+    {
         event.Enable(true);
+//        if(m_MLP->IsRunning())
+//            event.Enable(false);
+//        else
+//            event.Enable(true);
+            
+    }
+        
 }
 void MainFrame::OnLoadModel(wxCommandEvent& event)
 {

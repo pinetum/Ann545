@@ -18,6 +18,7 @@
 #include <wx/button.h>
 #include <wx/stattext.h>
 #include <wx/richtext/richtextctrl.h>
+#include <wx/gauge.h>
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 #if wxVERSION_NUMBER >= 2900
@@ -37,6 +38,8 @@ protected:
     wxButton* m_buttonValidate;
     wxStaticText* m_staticText;
     wxRichTextCtrl* m_richTextCtrl;
+    wxStaticText* m_staticTextPg;
+    wxGauge* m_gaugePg;
     wxMenuBar* m_menuBar;
     wxMenu* m_name6;
     wxMenuItem* m_menuItem7;
@@ -60,6 +63,8 @@ public:
     wxButton* GetButtonValidate() { return m_buttonValidate; }
     wxStaticText* GetStaticText() { return m_staticText; }
     wxRichTextCtrl* GetRichTextCtrl() { return m_richTextCtrl; }
+    wxStaticText* GetStaticTextPg() { return m_staticTextPg; }
+    wxGauge* GetGaugePg() { return m_gaugePg; }
     wxPanel* GetMainPanel() { return m_mainPanel; }
     wxMenuBar* GetMenuBar() { return m_menuBar; }
     wxToolBar* GetMainToolbar() { return m_mainToolbar; }

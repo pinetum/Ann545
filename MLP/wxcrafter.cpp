@@ -66,6 +66,19 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer11->Add(m_richTextCtrl, 1, wxALL|wxEXPAND, 5);
     
+    wxBoxSizer* boxSizer45 = new wxBoxSizer(wxHORIZONTAL);
+    
+    boxSizer11->Add(boxSizer45, 0, wxALL|wxEXPAND, 5);
+    
+    m_staticTextPg = new wxStaticText(m_mainPanel, wxID_ANY, _("9999/9999"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    boxSizer45->Add(m_staticTextPg, 0, wxALL, 5);
+    
+    m_gaugePg = new wxGauge(m_mainPanel, wxID_ANY, 100, wxDefaultPosition, wxSize(-1,-1), wxGA_HORIZONTAL);
+    m_gaugePg->SetValue(0);
+    
+    boxSizer45->Add(m_gaugePg, 1, wxALL|wxEXPAND, 5);
+    
     m_menuBar = new wxMenuBar(0);
     this->SetMenuBar(m_menuBar);
     
