@@ -11,6 +11,7 @@ public:
     static void showMessage(wxString msg);
     virtual ~MainFrame();
     time_t m_time_start;
+    bool m_bMLPrunning;
     MLP* m_MLP;
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
@@ -22,6 +23,7 @@ public:
     void OnMlpComplete(wxThreadEvent& evt);
     void OnMlpUpdatePg(wxThreadEvent& evt);
 protected:
+    virtual void OnUpdateParameterUI(wxUpdateUIEvent& event);
     virtual void OnLoadModel(wxCommandEvent& event);
     virtual void OnUpdateUI(wxUpdateUIEvent& event);
     static MainFrame * m_pThis;

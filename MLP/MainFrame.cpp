@@ -17,12 +17,22 @@ MainFrame::MainFrame(wxWindow* parent)
 {
     m_pThis             = this; 
     m_MLP               = NULL;
+    m_bMLPrunning       = false;
     SetSize(600, 400);
     Center();
     Bind(wxEVT_COMMAND_MLP_START, &MainFrame::OnMlpStart, this);
     Bind(wxEVT_COMMAND_MLP_UPDATE, &MainFrame::OnMlpUpdate, this);
     Bind(wxEVT_COMMAND_MLP_UPDATE_PG, &MainFrame::OnMlpUpdatePg, this);
     Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
+    
+    
+    m_textCtrl_IterationTimes->SetLabel("5000");
+    m_textCtrl_L1neurons->SetLabel("6");
+    m_textCtrl_L2neurons->SetLabel("8");
+    m_textCtrl_LearnRateInital->SetLabel("0.3");
+    m_textCtrl_LearnRateMin->SetLabel("0.05");
+    m_textCtrl_LearnRateShift->SetLabel("4500");
+    
 }
 
 MainFrame::~MainFrame()
@@ -34,6 +44,7 @@ void MainFrame::OnMlpStart(wxThreadEvent& evt)
 {
     startTimer();
     showMessage("MLP start Running..");
+    m_bMLPrunning = true;
 }
 void MainFrame::OnMlpUpdate(wxThreadEvent& evt)
 {
@@ -43,6 +54,7 @@ void MainFrame::OnMlpComplete(wxThreadEvent& evt)
 {
     stopTimer("MLP Stop");
     m_MLP = NULL;
+    m_bMLPrunning = false;
 }
 void MainFrame::OnMlpUpdatePg(wxThreadEvent& evt)
 {
@@ -129,7 +141,25 @@ void MainFrame::OnLoadData(wxCommandEvent& event)
 void MainFrame::OnTrainModel(wxCommandEvent& event)
 {
     if(!m_MLP->IsRunning())
+    {
+        double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration;
+        m_textCtrl_L1neurons->GetValue().ToDouble(&d_nL1);
+        m_textCtrl_L2neurons->GetValue().ToDouble(&d_nL2);
+        m_textCtrl_LearnRateInital->GetValue().ToDouble(&d_rateIntial);
+        m_textCtrl_LearnRateMin->GetValue().ToDouble(&d_rateMin);
+        m_textCtrl_IterationTimes->GetValue().ToDouble(&d_iteration);
+        m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
+        
+        m_MLP->SetParameter((int)d_nL1, 
+                            (int)d_nL2, 
+                            d_rateIntial, 
+                            d_rateMin, 
+                            d_rateShift, 
+                            d_iteration, 
+                            m_checkBox_Momentum->GetValue());
         m_MLP->Run();
+    }
+        
 }
 void MainFrame::OnValidate(wxCommandEvent& event)
 {
@@ -165,4 +195,9 @@ void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 }
 void MainFrame::OnLoadModel(wxCommandEvent& event)
 {
+}
+void MainFrame::OnUpdateParameterUI(wxUpdateUIEvent& event)
+{
+    
+    event.Enable(!m_bMLPrunning);
 }

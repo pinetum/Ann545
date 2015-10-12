@@ -42,6 +42,13 @@ public:
     double getLearningRate(int i_iteration, double slope)
         { return (m_dInitalLearningRate - m_dMinLearningRate) / (1+exp(slope*(i_iteration - m_nLearningRateShift)) ) + m_dMinLearningRate;}
     void openSampleFile(wxString fileName);
+    void SetParameter(  int n_nuronL1, 
+                        int n_nuronL2, 
+                        double d_InitalLearningRate, 
+                        double d_MinLearningRate,
+                        int n_LearningRateShift,
+                        int n_TotalIteration,
+                        bool b_Momentum);
     cv::Mat getNetworkResponse();
     virtual ExitCode Entry();
 private:

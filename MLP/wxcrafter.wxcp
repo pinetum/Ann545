@@ -942,7 +942,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_textCtrl55"
+																			"m_value":	"m_textCtrl_L1neurons"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1004,7 +1004,14 @@
 																			"m_label":	"Auto Complete Files:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}, {
 																	"m_type":	4405,
@@ -1104,7 +1111,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_textCtrl59"
+																			"m_value":	"m_textCtrl_LearnRateInital"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1166,7 +1173,14 @@
 																			"m_label":	"Auto Complete Files:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}, {
 																	"m_type":	4405,
@@ -1266,7 +1280,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_textCtrl63"
+																			"m_value":	"m_textCtrl_LearnRateShift"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1328,7 +1342,14 @@
 																			"m_label":	"Auto Complete Files:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}]
 														}, {
@@ -1475,7 +1496,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_textCtrl71"
+																			"m_value":	"m_textCtrl_L2neurons"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1537,7 +1558,14 @@
 																			"m_label":	"Auto Complete Files:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}, {
 																	"m_type":	4405,
@@ -1637,7 +1665,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_textCtrl75"
+																			"m_value":	"m_textCtrl_LearnRateMin"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1699,7 +1727,14 @@
 																			"m_label":	"Auto Complete Files:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}, {
 																	"m_type":	4405,
@@ -1799,7 +1834,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_textCtrl79"
+																			"m_value":	"m_textCtrl_IterationTimes"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1861,7 +1896,14 @@
 																			"m_label":	"Auto Complete Files:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}, {
 																	"m_type":	4415,
@@ -1886,7 +1928,7 @@
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Name:",
-																			"m_value":	"m_checkBoxMomentum"
+																			"m_value":	"m_checkBox_Momentum"
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Tooltip:",
@@ -1936,7 +1978,14 @@
 																			"m_label":	"Value:",
 																			"m_value":	false
 																		}],
-																	"m_events":	[],
+																	"m_events":	[{
+																			"m_eventName":	"wxEVT_UPDATE_UI",
+																			"m_eventClass":	"wxUpdateUIEvent",
+																			"m_eventHandler":	"wxUpdateUIEventHandler",
+																			"m_functionNameAndSignature":	"OnUpdateParameterUI(wxUpdateUIEvent& event)",
+																			"m_description":	"Process a wxEVT_UPDATE_UI event",
+																			"m_noBody":	false
+																		}],
 																	"m_children":	[]
 																}]
 														}]

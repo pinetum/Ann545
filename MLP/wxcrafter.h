@@ -40,18 +40,18 @@ protected:
     wxButton* m_buttonValidate;
     wxStaticText* m_staticText;
     wxStaticText* m_staticText51;
-    wxTextCtrl* m_textCtrl55;
+    wxTextCtrl* m_textCtrl_L1neurons;
     wxStaticText* m_staticText57;
-    wxTextCtrl* m_textCtrl59;
+    wxTextCtrl* m_textCtrl_LearnRateInital;
     wxStaticText* m_staticText61;
-    wxTextCtrl* m_textCtrl63;
+    wxTextCtrl* m_textCtrl_LearnRateShift;
     wxStaticText* m_staticText69;
-    wxTextCtrl* m_textCtrl71;
+    wxTextCtrl* m_textCtrl_L2neurons;
     wxStaticText* m_staticText73;
-    wxTextCtrl* m_textCtrl75;
+    wxTextCtrl* m_textCtrl_LearnRateMin;
     wxStaticText* m_staticText77;
-    wxTextCtrl* m_textCtrl79;
-    wxCheckBox* m_checkBoxMomentum;
+    wxTextCtrl* m_textCtrl_IterationTimes;
+    wxCheckBox* m_checkBox_Momentum;
     wxRichTextCtrl* m_richTextCtrl;
     wxStaticText* m_staticTextPg;
     wxGauge* m_gaugePg;
@@ -68,6 +68,7 @@ protected:
     virtual void OnTrainModel(wxCommandEvent& event) { event.Skip(); }
     virtual void OnUpdateUI(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnValidate(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnUpdateParameterUI(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
 
@@ -78,18 +79,18 @@ public:
     wxButton* GetButtonValidate() { return m_buttonValidate; }
     wxStaticText* GetStaticText() { return m_staticText; }
     wxStaticText* GetStaticText51() { return m_staticText51; }
-    wxTextCtrl* GetTextCtrl55() { return m_textCtrl55; }
+    wxTextCtrl* GetTextCtrl_L1neurons() { return m_textCtrl_L1neurons; }
     wxStaticText* GetStaticText57() { return m_staticText57; }
-    wxTextCtrl* GetTextCtrl59() { return m_textCtrl59; }
+    wxTextCtrl* GetTextCtrl_LearnRateInital() { return m_textCtrl_LearnRateInital; }
     wxStaticText* GetStaticText61() { return m_staticText61; }
-    wxTextCtrl* GetTextCtrl63() { return m_textCtrl63; }
+    wxTextCtrl* GetTextCtrl_LearnRateShift() { return m_textCtrl_LearnRateShift; }
     wxStaticText* GetStaticText69() { return m_staticText69; }
-    wxTextCtrl* GetTextCtrl71() { return m_textCtrl71; }
+    wxTextCtrl* GetTextCtrl_L2neurons() { return m_textCtrl_L2neurons; }
     wxStaticText* GetStaticText73() { return m_staticText73; }
-    wxTextCtrl* GetTextCtrl75() { return m_textCtrl75; }
+    wxTextCtrl* GetTextCtrl_LearnRateMin() { return m_textCtrl_LearnRateMin; }
     wxStaticText* GetStaticText77() { return m_staticText77; }
-    wxTextCtrl* GetTextCtrl79() { return m_textCtrl79; }
-    wxCheckBox* GetCheckBoxMomentum() { return m_checkBoxMomentum; }
+    wxTextCtrl* GetTextCtrl_IterationTimes() { return m_textCtrl_IterationTimes; }
+    wxCheckBox* GetCheckBox_Momentum() { return m_checkBox_Momentum; }
     wxRichTextCtrl* GetRichTextCtrl() { return m_richTextCtrl; }
     wxStaticText* GetStaticTextPg() { return m_staticTextPg; }
     wxGauge* GetGaugePg() { return m_gaugePg; }

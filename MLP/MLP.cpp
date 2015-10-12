@@ -21,7 +21,22 @@ MLP::MLP(wxEvtHandler* pParent)
     m_bMomentum  = false;
     m_dDesiredOutput_rescale = 0.1;
 }
-
+void MLP::SetParameter(  int n_nuronL1, 
+                    int n_nuronL2, 
+                    double d_InitalLearningRate, 
+                    double d_MinLearningRate,
+                    int n_LearningRateShift,
+                    int n_TotalIteration,
+                    bool b_Momentum)
+{
+    m_nNeuronsL1 = n_nuronL1;
+    m_nNeuronsL2 = n_nuronL2;
+    m_dInitalLearningRate = d_InitalLearningRate;
+    m_dMinLearningRate = d_MinLearningRate;
+    m_nLearningRateShift = n_LearningRateShift;
+    m_nTotalIteration = n_TotalIteration;
+    m_bMomentum  = b_Momentum;
+}
 MLP::~MLP()
 {
 
