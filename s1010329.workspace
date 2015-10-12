@@ -5,8 +5,14 @@
     <WorkspaceConfiguration Name="Debug" Selected="no">
       <Project Name="MLP" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="yes">
+    <WorkspaceConfiguration Name="Release" Selected="no">
       <Project Name="MLP" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Debug-Win" Selected="no">
+      <Project Name="MLP" ConfigName="Debug-Win"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release-Win" Selected="yes">
+      <Project Name="MLP" ConfigName="Release-Win"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
