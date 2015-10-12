@@ -17,6 +17,8 @@
 #include <wx/panel.h>
 #include <wx/button.h>
 #include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/checkbox.h>
 #include <wx/richtext/richtextctrl.h>
 #include <wx/gauge.h>
 #include <wx/menu.h>
@@ -37,6 +39,19 @@ protected:
     wxButton* m_buttonTrain;
     wxButton* m_buttonValidate;
     wxStaticText* m_staticText;
+    wxStaticText* m_staticText51;
+    wxTextCtrl* m_textCtrl55;
+    wxStaticText* m_staticText57;
+    wxTextCtrl* m_textCtrl59;
+    wxStaticText* m_staticText61;
+    wxTextCtrl* m_textCtrl63;
+    wxStaticText* m_staticText69;
+    wxTextCtrl* m_textCtrl71;
+    wxStaticText* m_staticText73;
+    wxTextCtrl* m_textCtrl75;
+    wxStaticText* m_staticText77;
+    wxTextCtrl* m_textCtrl79;
+    wxCheckBox* m_checkBoxMomentum;
     wxRichTextCtrl* m_richTextCtrl;
     wxStaticText* m_staticTextPg;
     wxGauge* m_gaugePg;
@@ -62,6 +77,19 @@ public:
     wxButton* GetButtonTrain() { return m_buttonTrain; }
     wxButton* GetButtonValidate() { return m_buttonValidate; }
     wxStaticText* GetStaticText() { return m_staticText; }
+    wxStaticText* GetStaticText51() { return m_staticText51; }
+    wxTextCtrl* GetTextCtrl55() { return m_textCtrl55; }
+    wxStaticText* GetStaticText57() { return m_staticText57; }
+    wxTextCtrl* GetTextCtrl59() { return m_textCtrl59; }
+    wxStaticText* GetStaticText61() { return m_staticText61; }
+    wxTextCtrl* GetTextCtrl63() { return m_textCtrl63; }
+    wxStaticText* GetStaticText69() { return m_staticText69; }
+    wxTextCtrl* GetTextCtrl71() { return m_textCtrl71; }
+    wxStaticText* GetStaticText73() { return m_staticText73; }
+    wxTextCtrl* GetTextCtrl75() { return m_textCtrl75; }
+    wxStaticText* GetStaticText77() { return m_staticText77; }
+    wxTextCtrl* GetTextCtrl79() { return m_textCtrl79; }
+    wxCheckBox* GetCheckBoxMomentum() { return m_checkBoxMomentum; }
     wxRichTextCtrl* GetRichTextCtrl() { return m_richTextCtrl; }
     wxStaticText* GetStaticTextPg() { return m_staticTextPg; }
     wxGauge* GetGaugePg() { return m_gaugePg; }

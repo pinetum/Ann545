@@ -86,13 +86,32 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="GCC" DebuggerType="LLDB Debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O2;-Wall;$(shell wx-config --cflags)" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-O2;-Wall;$(shell /usr/local/bin/wx-config --cflags)" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <IncludePath Value="/usr/local/include"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
-      <Linker Options="$(shell wx-config --libs)" Required="yes"/>
+      <Linker Options="$(shell /usr/local/bin/wx-config --libs)" Required="yes">
+        <LibraryPath Value="/usr/local/lib"/>
+        <Library Value="libopencv_calib3d.3.0.0.dylib"/>
+        <Library Value="libopencv_imgproc.3.0.0.dylib"/>
+        <Library Value="libopencv_superres.3.0.0.dylib"/>
+        <Library Value="libopencv_core.3.0.0.dylib"/>
+        <Library Value="libopencv_ml.3.0.0.dylib"/>
+        <Library Value="libopencv_video.3.0.0.dylib"/>
+        <Library Value="libopencv_features2d.3.0.0.dylib"/>
+        <Library Value="libopencv_objdetect.3.0.0.dylib"/>
+        <Library Value="libopencv_videoio.3.0.0.dylib"/>
+        <Library Value="libopencv_flann.3.0.0.dylib"/>
+        <Library Value="libopencv_photo.3.0.0.dylib"/>
+        <Library Value="libopencv_videostab.3.0.0.dylib"/>
+        <Library Value="libopencv_highgui.3.0.0.dylib"/>
+        <Library Value="libopencv_shape.3.0.0.dylib"/>
+        <Library Value="libopencv_imgcodecs.3.0.0.dylib"/>
+        <Library Value="libopencv_stitching.3.0.0.dylib"/>
+      </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

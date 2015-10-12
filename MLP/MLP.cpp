@@ -17,7 +17,7 @@ MLP::MLP(wxEvtHandler* pParent)
     m_dInitalLearningRate = 0.3;
     m_dMinLearningRate = 0.05;
     m_nLearningRateShift = 4000;
-    m_nTotalIteration = 4000;
+    m_nTotalIteration = 3000;
     m_bMomentum  = false;
     m_dDesiredOutput_rescale = 0.1;
 }
@@ -63,24 +63,18 @@ wxThread::ExitCode MLP::Entry(){
             cv::Mat input = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(0, m_nInputs));
             
             cv::Mat response = input*m_weight_l1*m_weight_l2*m_weight_l3;
-            
-            
-            evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE);
-            evt_update->SetString(wxString::Format("%.2f, %.2f", response.at<double>(0,0), response.at<double>(0,1)));
-            wxQueueEvent(m_pHandler, evt_update);
+            //evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE);
+            //evt_update->SetString(wxString::Format("%.2f, %.2f", response.at<double>(0,0), response.at<double>(0,1)));
+            //wxQueueEvent(m_pHandler, evt_update);
         }
-    }
-    
-    
-    
-    for(int i = 0; i < MLP_TOTAL_ITERATION; i++)
-    {
-        
-        wxThread::This()->Sleep(1000);
         evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE_PG);
-        evt_update->SetInt(i);
+        evt_update->SetInt(i_iteration);
         wxQueueEvent(m_pHandler, evt_update);
     }
+    
+    
+    
+
     
     
     
@@ -110,7 +104,7 @@ void MLP::dataScale()
         //double min, max;
         //cv::minMaxLoc(m_data_input.col(i), &min, &max);
     }
-    ///////-----desired oupput-------///////
+                   ///////-----desired oupput-------///////
     
     // begin
     m_data_scaled2train.col(m_nInputs) = (m_data_input.col(m_nInputs)-cv::Scalar(4))/-2; // 2>>1, 4>>0

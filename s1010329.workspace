@@ -2,7 +2,7 @@
 <CodeLite_Workspace Name="s1010329" Database="" SWTLW="No">
   <Project Name="MLP" Path="MLP/MLP.project" Active="Yes"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Project Name="MLP" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">

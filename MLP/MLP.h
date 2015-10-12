@@ -5,7 +5,7 @@
 #include <wx/thread.h>
 #include <wx/event.h> 
 
-#define MLP_TOTAL_ITERATION 5
+
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MLP_START,        wxThreadEvent);
 wxDECLARE_EVENT(wxEVT_COMMAND_MLP_UPDATE,       wxThreadEvent);

@@ -39,7 +39,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     wxBoxSizer* boxSizer37 = new wxBoxSizer(wxHORIZONTAL);
     
-    boxSizer35->Add(boxSizer37, 1, wxALL|wxEXPAND, 5);
+    boxSizer35->Add(boxSizer37, 0, wxALL|wxEXPAND, 5);
     
     m_buttonLoadModel = new wxButton(m_mainPanel, wxID_ANY, _("Load Model"), wxDefaultPosition, wxSize(-1,-1), 0);
     
@@ -61,6 +61,93 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_staticText = new wxStaticText(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
     
     boxSizer37->Add(m_staticText, 0, wxALL, 5);
+    
+    wxBoxSizer* boxSizer65 = new wxBoxSizer(wxHORIZONTAL);
+    
+    boxSizer35->Add(boxSizer65, 1, wxALL|wxEXPAND, 5);
+    
+    wxFlexGridSizer* flexGridSizer49 = new wxFlexGridSizer(0, 2, 0, 0);
+    flexGridSizer49->SetFlexibleDirection( wxBOTH );
+    flexGridSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    boxSizer65->Add(flexGridSizer49, 0, wxALL, 5);
+    
+    m_staticText51 = new wxStaticText(m_mainPanel, wxID_ANY, _("Hidden L1 neurons"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer49->Add(m_staticText51, 0, wxALL, 5);
+    
+    m_textCtrl55 = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl55->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer49->Add(m_textCtrl55, 0, wxALL, 5);
+    
+    m_staticText57 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate u0"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer49->Add(m_staticText57, 0, wxALL, 5);
+    
+    m_textCtrl59 = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl59->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer49->Add(m_textCtrl59, 0, wxALL, 5);
+    
+    m_staticText61 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate shift"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer49->Add(m_staticText61, 0, wxALL, 5);
+    
+    m_textCtrl63 = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl63->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer49->Add(m_textCtrl63, 0, wxALL, 5);
+    
+    wxFlexGridSizer* flexGridSizer67 = new wxFlexGridSizer(0, 2, 0, 0);
+    flexGridSizer67->SetFlexibleDirection( wxBOTH );
+    flexGridSizer67->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    boxSizer65->Add(flexGridSizer67, 0, wxALL, 5);
+    
+    m_staticText69 = new wxStaticText(m_mainPanel, wxID_ANY, _("Hidden L2 neurons"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer67->Add(m_staticText69, 0, wxALL, 5);
+    
+    m_textCtrl71 = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl71->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer67->Add(m_textCtrl71, 0, wxALL, 5);
+    
+    m_staticText73 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate u min"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer67->Add(m_staticText73, 0, wxALL, 5);
+    
+    m_textCtrl75 = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl75->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer67->Add(m_textCtrl75, 0, wxALL, 5);
+    
+    m_staticText77 = new wxStaticText(m_mainPanel, wxID_ANY, _("Iteration times"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer67->Add(m_staticText77, 0, wxALL, 5);
+    
+    m_textCtrl79 = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl79->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer67->Add(m_textCtrl79, 0, wxALL, 5);
+    
+    m_checkBoxMomentum = new wxCheckBox(m_mainPanel, wxID_ANY, _("Momentum"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_checkBoxMomentum->SetValue(false);
+    
+    flexGridSizer67->Add(m_checkBoxMomentum, 0, wxALL, 5);
     
     m_richTextCtrl = new wxRichTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
     

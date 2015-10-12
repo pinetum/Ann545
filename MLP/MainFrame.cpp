@@ -17,7 +17,7 @@ MainFrame::MainFrame(wxWindow* parent)
 {
     m_pThis             = this; 
     m_MLP               = NULL;
-    SetSize(500, 300);
+    SetSize(600, 400);
     Center();
     Bind(wxEVT_COMMAND_MLP_START, &MainFrame::OnMlpStart, this);
     Bind(wxEVT_COMMAND_MLP_UPDATE, &MainFrame::OnMlpUpdate, this);
@@ -47,9 +47,9 @@ void MainFrame::OnMlpComplete(wxThreadEvent& evt)
 void MainFrame::OnMlpUpdatePg(wxThreadEvent& evt)
 {
     int iteration = evt.GetInt() + 1 ;
-    
-    m_gaugePg->SetValue(100*iteration/MLP_TOTAL_ITERATION);
-    m_staticTextPg->SetLabel(wxString::Format("%d/%d", iteration, MLP_TOTAL_ITERATION));
+    int total = m_MLP->m_nTotalIteration;
+    m_gaugePg->SetValue(100*iteration/total);
+    m_staticTextPg->SetLabel(wxString::Format("%d/%d", iteration, total));
     
 }
 
