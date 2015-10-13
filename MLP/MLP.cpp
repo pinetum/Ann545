@@ -122,8 +122,6 @@ wxThread::ExitCode MLP::Entry(){
                 output_L1 = summation_L1.clone();
                 Sigmod_tan(&output_L1);
                 
-                
-                
                 //Layer 2
                 summation_L2 = summation_L1*m_weight_l2;
                 output_L2 = summation_L2.clone();
@@ -137,21 +135,44 @@ wxThread::ExitCode MLP::Entry(){
                 //SE(train)
                 cv::Mat error = output_desired - output_L3 ;
                 cv::Mat errorSquare;
-                cv::pow(error, 2, errorSquare);
+                cv::pow(error.clone(), 2, errorSquare);
                 MSE_training_Fold += errorSquare;
                 
                 
+                
+                
+                // update weight
+                double learnRate = getLearningRate(i_iteration);
                 // update Layer 3 weight
-                Sigmod_tanDerivative(&summation_L3);
-                //cv::Mat thelta = error.mul(summation_L3);
-                //m_weight_l3 = m_weight_l3 + getLearningRate(i_iteration)*thelta*output_L2;
+                cv::Mat derivate_L3 = summation_L3.clone();
+                Sigmod_tanDerivative(&derivate_L3);
+                cv::Mat delta_L3 = error.mul(summation_L3); 
+                
+                for(int i =0; i< m_weight_l3.rows; i++)
+                {
+                    for(int j=0; j< m_weight_l3.cols; j++)
+                    {
+                        m_weight_l3.at<double>(i, j) = m_weight_l3.at<double>(i, j) +
+                                                        learnRate*delta_L3.at<double>(0, i)*output_L2.at<double>(0, j);
+                    }
+                }
                 
                 
-                // update Layer 2 weight 
                 
-                // update Layer 1 weight
-                
-                
+//                // update Layer 2 weight 
+//                cv::Mat derivate_L2 = summation_L2.clone();
+//                Sigmod_tanDerivative(&derivate_L2);
+//                cv::Mat delta_L2 = delta_L3*m_weight_l3*derivate_L2;
+//                m_weight_l2 = m_weight_l2 + learnRate*delta_L2*output_L1;
+//               
+//                
+//                
+//                // update Layer 1 weight
+//                cv::Mat derivate_L1 = summation_L1.clone();
+//                Sigmod_tanDerivative(&derivate_L1);
+//                cv::Mat delta_L1 = delta_L2*m_weight_l2*derivate_L1;
+//                //m_weight_l1 = m_weight_l1 + learnRate*delta_L1*input;
+//               
                 
             } // training for loop end
             
@@ -175,7 +196,8 @@ wxThread::ExitCode MLP::Entry(){
                 MSE_valudation_Fold += error;
             }// validation for loop end
             
-            
+            writeMat("MSE_valudation_Fold.csv", &MSE_valudation_Fold);
+            writeMat("MSE_training_Fold.csv", &MSE_training_Fold);
             
             
             //MSE(fold)

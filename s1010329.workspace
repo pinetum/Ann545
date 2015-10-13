@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="s1010329" Database="" SWTLW="No">
+<CodeLite_Workspace Name="s1010329" Database="">
   <Project Name="MLP" Path="MLP/MLP.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">

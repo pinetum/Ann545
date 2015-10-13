@@ -26,7 +26,7 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
     
     
-    m_textCtrl_IterationTimes->SetLabel("5000");
+    m_textCtrl_IterationTimes->SetLabel("4");
     m_textCtrl_L1neurons->SetLabel("6");
     m_textCtrl_L2neurons->SetLabel("8");
     m_textCtrl_LearnRateInital->SetLabel("0.3");
