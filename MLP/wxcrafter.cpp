@@ -105,6 +105,17 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_LearnRateShift, 0, wxALL, 5);
     
+    m_staticText91 = new wxStaticText(m_mainPanel, wxID_ANY, _("k-fold  k"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer49->Add(m_staticText91, 0, wxALL, 5);
+    
+    m_textCtrl_KFold = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl_KFold->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer49->Add(m_textCtrl_KFold, 0, wxALL, 5);
+    
     wxFlexGridSizer* flexGridSizer67 = new wxFlexGridSizer(0, 2, 0, 0);
     flexGridSizer67->SetFlexibleDirection( wxBOTH );
     flexGridSizer67->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
@@ -144,10 +155,17 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer67->Add(m_textCtrl_IterationTimes, 0, wxALL, 5);
     
-    m_checkBox_Momentum = new wxCheckBox(m_mainPanel, wxID_ANY, _("Momentum"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_checkBox_Momentum = new wxCheckBox(m_mainPanel, wxID_ANY, _("Momentum 𝛼"), wxDefaultPosition, wxSize(-1,-1), 0);
     m_checkBox_Momentum->SetValue(false);
     
     flexGridSizer67->Add(m_checkBox_Momentum, 0, wxALL, 5);
+    
+    m_textCtrl_MomentumAlpha = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl_MomentumAlpha->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer67->Add(m_textCtrl_MomentumAlpha, 0, wxALL, 5);
     
     m_richTextCtrl = new wxRichTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
     
@@ -186,10 +204,14 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     SetName(wxT("MainFrameBaseClass"));
     SetSizeHints(500,300);
-    if ( GetSizer() ) {
+    if (GetSizer()) {
          GetSizer()->Fit(this);
     }
-    CentreOnParent(wxBOTH);
+    if(GetParent()) {
+        CentreOnParent(wxBOTH);
+    } else {
+        CentreOnScreen(wxBOTH);
+    }
 #if wxVERSION_NUMBER >= 2900
     if(!wxPersistenceManager::Get().Find(this)) {
         wxPersistenceManager::Get().RegisterAndRestore(this);
@@ -207,10 +229,12 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_textCtrl_L1neurons->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateInital->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateShift->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
+    m_textCtrl_KFold->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_L2neurons->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateMin->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_IterationTimes->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_checkBox_Momentum->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
+    m_textCtrl_MomentumAlpha->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     this->Connect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     
@@ -227,10 +251,12 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_textCtrl_L1neurons->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateInital->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateShift->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
+    m_textCtrl_KFold->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_L2neurons->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateMin->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_IterationTimes->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_checkBox_Momentum->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
+    m_textCtrl_MomentumAlpha->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     this->Disconnect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     

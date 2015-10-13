@@ -32,13 +32,14 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_LearnRateInital->SetLabel("0.3");
     m_textCtrl_LearnRateMin->SetLabel("0.05");
     m_textCtrl_LearnRateShift->SetLabel("4500");
-    
+    m_textCtrl_KFold->SetLabel("10");
+    m_textCtrl_MomentumAlpha->SetLabel("0.06");
 }
 
 MainFrame::~MainFrame()
 {
     if(m_MLP !=NULL)
-        delete m_MLP;
+        m_MLP->Delete();
 }
 void MainFrame::OnMlpStart(wxThreadEvent& evt)
 {
@@ -142,21 +143,24 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
 {
     if(!m_MLP->IsRunning())
     {
-        double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration;
+        double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration, d_nkFold, d_momentumAlpha;
         m_textCtrl_L1neurons->GetValue().ToDouble(&d_nL1);
         m_textCtrl_L2neurons->GetValue().ToDouble(&d_nL2);
         m_textCtrl_LearnRateInital->GetValue().ToDouble(&d_rateIntial);
         m_textCtrl_LearnRateMin->GetValue().ToDouble(&d_rateMin);
         m_textCtrl_IterationTimes->GetValue().ToDouble(&d_iteration);
         m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
-        
+        m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
+        m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
         m_MLP->SetParameter((int)d_nL1, 
                             (int)d_nL2, 
                             d_rateIntial, 
                             d_rateMin, 
                             d_rateShift, 
                             d_iteration, 
-                            m_checkBox_Momentum->GetValue());
+                            m_checkBox_Momentum->GetValue(),
+                            d_momentumAlpha,
+                            (int)d_nkFold);
         m_MLP->Run();
     }
         
@@ -195,6 +199,7 @@ void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 }
 void MainFrame::OnLoadModel(wxCommandEvent& event)
 {
+
 }
 void MainFrame::OnUpdateParameterUI(wxUpdateUIEvent& event)
 {

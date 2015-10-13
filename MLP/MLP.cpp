@@ -19,6 +19,7 @@ MLP::MLP(wxEvtHandler* pParent)
     m_nLearningRateShift = 4000;
     m_nTotalIteration = 3000;
     m_bMomentum  = false;
+    m_nKfold = 10;
     m_dDesiredOutput_rescale = 0.1;
 }
 void MLP::SetParameter(  int n_nuronL1, 
@@ -27,7 +28,9 @@ void MLP::SetParameter(  int n_nuronL1,
                     double d_MinLearningRate,
                     int n_LearningRateShift,
                     int n_TotalIteration,
-                    bool b_Momentum)
+                    bool b_Momentum,
+                    double d_MomentumAlpha,
+                    int n_kFold)
 {
     m_nNeuronsL1 = n_nuronL1;
     m_nNeuronsL2 = n_nuronL2;
@@ -36,6 +39,8 @@ void MLP::SetParameter(  int n_nuronL1,
     m_nLearningRateShift = n_LearningRateShift;
     m_nTotalIteration = n_TotalIteration;
     m_bMomentum  = b_Momentum;
+    m_nKfold = n_kFold;
+    m_dMomentumAlpha = d_MomentumAlpha;
 }
 MLP::~MLP()
 {
@@ -62,38 +67,130 @@ wxThread::ExitCode MLP::Entry(){
     m_weight_l1.create(m_nInputs,       m_nNeuronsL1,   CV_64FC1);
     m_weight_l2.create(m_nNeuronsL1,    m_nNeuronsL2,   CV_64FC1);
     m_weight_l3.create(m_nNeuronsL2,    m_nClasses,     CV_64FC1);
-    cv::randu(m_weight_l1, cv::Scalar(0), cv::Scalar(0.3));
-    cv::randu(m_weight_l2, cv::Scalar(0), cv::Scalar(0.3));
-    cv::randu(m_weight_l3, cv::Scalar(0), cv::Scalar(0.3));
+    cv::randu(m_weight_l1, cv::Scalar(0), cv::Scalar(0.4));
+    cv::randu(m_weight_l2, cv::Scalar(0), cv::Scalar(0.4));
+    cv::randu(m_weight_l3, cv::Scalar(0), cv::Scalar(0.4));
     
     writeMat("./inital_W1.txt", &m_weight_l1);
     writeMat("./inital_W2.txt", &m_weight_l2);
     writeMat("./inital_W3.txt", &m_weight_l3);
     
+    std::vector<double > vMSE_training;
+    std::vector<double > vMSE_validation;
+    //epoch for loop
     for(int i_iteration = 0; i_iteration < m_nTotalIteration; i_iteration++)
     {
+        double dMSE_training    = 0;
+        double dMSE_validation  = 0;
+        int n_preFoldItems = m_data_scaled2train.rows/m_nKfold;
         
-        for(int i_dataRows = 0; i_dataRows < m_data_scaled2train.rows; i_dataRows++)
+        
+        // TO-DO shuffel
+        
+        // kfold for loop
+        for(int i_kFold = 0; i_kFold < m_nKfold; i_kFold++)
         {
-            cv::Mat input = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(0, m_nInputs));
+            cv::Mat MSE_training_Fold = cv::Mat::zeros(1, m_nClasses, CV_64FC1);
+            cv::Mat MSE_valudation_Fold = cv::Mat::zeros(1, m_nClasses, CV_64FC1);
             
-            cv::Mat response = input*m_weight_l1*m_weight_l2*m_weight_l3;
-            //evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE);
-            //evt_update->SetString(wxString::Format("%.2f, %.2f", response.at<double>(0,0), response.at<double>(0,1)));
-            //wxQueueEvent(m_pHandler, evt_update);
-        }
+            // 切割Fold:index of validation
+            int i_strt  = n_preFoldItems*i_kFold;
+            int i_end   = i_strt + n_preFoldItems;
+            if(i_kFold == m_nKfold -1)
+            {
+                i_end = m_data_scaled2train.rows;
+            }
+            cv::Mat validateData = m_data_scaled2train(cv::Range(i_strt, i_end), cv::Range::all()).clone();
+            
+            
+            
+            // training for loop
+            for(int i_dataRows = 0; i_dataRows < m_data_scaled2train.rows; i_dataRows++)
+            {
+                
+                // if row is in validation data range: continue loop..
+                if(i_dataRows >= i_strt && i_strt < i_end)
+                    continue;
+                cv::Mat input = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(0, m_nInputs));                
+                cv::Mat output_desired = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
+                cv::Mat response_L1, response_L2, response_L3;
+                response_L1 = input*m_weight_l1;
+                Sigmod_tan(&response_L1);
+                
+                response_L2 = response_L1*m_weight_l2;
+                Sigmod_tan(&response_L2);
+                
+                response_L3 = response_L2*m_weight_l3;
+                Sigmod_tan(&response_L3);
+                
+                
+                //SE(train)
+                cv::Mat error = output_desired - response_L3 ;
+                cv::pow(error, 2, error);
+                MSE_training_Fold += error;
+                
+                
+            } // training for loop end
+            
+            // validation for loop
+            for(int i_validRows= i_strt; i_validRows < i_end; i_validRows++)
+            {
+                cv::Mat input = m_data_scaled2train(cv::Range(i_validRows, i_validRows+1), cv::Range(0, m_nInputs));                
+                cv::Mat output_desired = m_data_scaled2train(cv::Range(i_validRows, i_validRows+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
+                cv::Mat response_L1, response_L2, response_L3;
+                response_L1 = input*m_weight_l1;
+                Sigmod_tan(&response_L1);
+                response_L2 = response_L1*m_weight_l2;
+                Sigmod_tan(&response_L2);
+                response_L3 = response_L2*m_weight_l3;
+                Sigmod_tan(&response_L3);
+                
+                
+                //SE(train)
+                cv::Mat error = output_desired - response_L3 ;
+                cv::pow(error, 2, error);
+                MSE_valudation_Fold += error;
+            }// validation for loop end
+            
+            
+            
+            
+            //MSE(fold)
+            dMSE_training += cv::sum(MSE_training_Fold)[0]/(m_data_scaled2train.rows-i_end+i_strt);
+            dMSE_validation += cv::sum(MSE_valudation_Fold)[0]/(i_end-i_strt);
+            
+            
+        }// kfold for loop end
+        
+        //MSE(epoch)
+        vMSE_training.push_back(dMSE_training/m_nKfold);
+        vMSE_validation.push_back(dMSE_validation/m_nKfold);
+        
+        
         evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE_PG);
         evt_update->SetInt(i_iteration);
         wxQueueEvent(m_pHandler, evt_update);
-    }
+    }//epoch for loop end
     
     
+    //------------------------save files---------------------//
     
-
+    //save MSE history
+    cv::Mat MSE_trainigData(1, vMSE_training.size(), CV_64F, &vMSE_training.front());
+    cv::Mat MSE_validationData(1, vMSE_validation.size(), CV_64F, &vMSE_validation.front());
+    writeMat("MSE_trainigData.csv", &MSE_trainigData);
+    writeMat("MSE_validationData.csv", &MSE_validationData);
     
     
+    //save weight result
+    writeMat("./end_W1.txt", &m_weight_l1);
+    writeMat("./end_W2.txt", &m_weight_l2);
+    writeMat("./end_W3.txt", &m_weight_l3);
+    
+    //------------------------save files end-----------------//
     
     
+    // post event2handler4stop
     evt_end = new wxThreadEvent(wxEVT_COMMAND_MLP_COMPLETE);
     evt_end->SetString("[MLP]Complete!");
     wxQueueEvent(m_pHandler, evt_end);
@@ -113,11 +210,10 @@ void MLP::dataScale()
     m_data_scaled2train.create(m_data_input.rows, m_nInputs + m_nClasses, CV_64FC1);
     for(int i =0; i < m_nInputs; i++)
     {
-        // solution 1
+        double min, max;
+        cv::minMaxLoc(m_data_input.col(i), &min, &max);
         cv::normalize(m_data_input.col(i), m_data_scaled2train.col(i), 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
-        // solution 2 (save min and max)
-        //double min, max;
-        //cv::minMaxLoc(m_data_input.col(i), &min, &max);
+           
     }
                    ///////-----desired oupput-------///////
     
@@ -142,7 +238,7 @@ bool MLP::writeModule()
 }
 bool MLP::readModule()
 {
-    
+
 }
 double MLP::getAccuracy()
 {

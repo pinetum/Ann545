@@ -45,6 +45,8 @@ protected:
     wxTextCtrl* m_textCtrl_LearnRateInital;
     wxStaticText* m_staticText61;
     wxTextCtrl* m_textCtrl_LearnRateShift;
+    wxStaticText* m_staticText91;
+    wxTextCtrl* m_textCtrl_KFold;
     wxStaticText* m_staticText69;
     wxTextCtrl* m_textCtrl_L2neurons;
     wxStaticText* m_staticText73;
@@ -52,6 +54,7 @@ protected:
     wxStaticText* m_staticText77;
     wxTextCtrl* m_textCtrl_IterationTimes;
     wxCheckBox* m_checkBox_Momentum;
+    wxTextCtrl* m_textCtrl_MomentumAlpha;
     wxRichTextCtrl* m_richTextCtrl;
     wxStaticText* m_staticTextPg;
     wxGauge* m_gaugePg;
@@ -84,6 +87,8 @@ public:
     wxTextCtrl* GetTextCtrl_LearnRateInital() { return m_textCtrl_LearnRateInital; }
     wxStaticText* GetStaticText61() { return m_staticText61; }
     wxTextCtrl* GetTextCtrl_LearnRateShift() { return m_textCtrl_LearnRateShift; }
+    wxStaticText* GetStaticText91() { return m_staticText91; }
+    wxTextCtrl* GetTextCtrl_KFold() { return m_textCtrl_KFold; }
     wxStaticText* GetStaticText69() { return m_staticText69; }
     wxTextCtrl* GetTextCtrl_L2neurons() { return m_textCtrl_L2neurons; }
     wxStaticText* GetStaticText73() { return m_staticText73; }
@@ -91,6 +96,7 @@ public:
     wxStaticText* GetStaticText77() { return m_staticText77; }
     wxTextCtrl* GetTextCtrl_IterationTimes() { return m_textCtrl_IterationTimes; }
     wxCheckBox* GetCheckBox_Momentum() { return m_checkBox_Momentum; }
+    wxTextCtrl* GetTextCtrl_MomentumAlpha() { return m_textCtrl_MomentumAlpha; }
     wxRichTextCtrl* GetRichTextCtrl() { return m_richTextCtrl; }
     wxStaticText* GetStaticTextPg() { return m_staticTextPg; }
     wxGauge* GetGaugePg() { return m_gaugePg; }

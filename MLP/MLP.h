@@ -28,8 +28,11 @@ public:
     int m_nClasses;
     int m_nLearningRateShift;
     int m_nTotalIteration;
+    int m_nKfold;
     
+    double m_dMomentumAlpha;
     bool m_bMomentum;
+    
     double m_dDesiredOutput_rescale;
     double m_dInitalLearningRate;
     double m_dMinLearningRate;
@@ -41,6 +44,11 @@ public:
         { return slope*(1+getSigmod_tan(x, slope))*(1-getSigmod_tan(x, slope));}
     double getLearningRate(int i_iteration, double slope)
         { return (m_dInitalLearningRate - m_dMinLearningRate) / (1+exp(slope*(i_iteration - m_nLearningRateShift)) ) + m_dMinLearningRate;}
+    void Sigmod_tan(cv::Mat* x, double slope = 0.5)
+    {
+        cv::exp(*x*-2*slope, *x);
+        *x = (-2**x+cv::Scalar(1) )/(2**x+cv::Scalar(1));
+    }
     void openSampleFile(wxString fileName);
     void SetParameter(  int n_nuronL1, 
                         int n_nuronL2, 
@@ -48,7 +56,9 @@ public:
                         double d_MinLearningRate,
                         int n_LearningRateShift,
                         int n_TotalIteration,
-                        bool b_Momentum);
+                        bool b_Momentum,
+                        double d_MomentumAlpha,
+                        int n_kFold);
     cv::Mat getNetworkResponse();
     virtual ExitCode Entry();
 private:
