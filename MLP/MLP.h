@@ -42,13 +42,22 @@ public:
         { return (1-2*exp(-2*x*slope))/(1+2*exp(-2*x*slope));}
     double getSigmodDerivative_tan(double x, double slope)
         { return slope*(1+getSigmod_tan(x, slope))*(1-getSigmod_tan(x, slope));}
-    double getLearningRate(int i_iteration, double slope)
+    double getLearningRate(int i_iteration, double slope = 0.5)
         { return (m_dInitalLearningRate - m_dMinLearningRate) / (1+exp(slope*(i_iteration - m_nLearningRateShift)) ) + m_dMinLearningRate;}
     void Sigmod_tan(cv::Mat* x, double slope = 0.5)
     {
         cv::exp(*x*-2*slope, *x);
         *x = (-2**x+cv::Scalar(1) )/(2**x+cv::Scalar(1));
     }
+    void Sigmod_tanDerivative(cv::Mat* x, double slope = 0.5)
+    {
+        Sigmod_tan(x, slope);
+        *x = slope *( (cv::Scalar(1)+*x).mul(cv::Scalar(1)-*x));
+    }
+    
+    
+    
+    
     void openSampleFile(wxString fileName);
     void SetParameter(  int n_nuronL1, 
                         int n_nuronL2, 

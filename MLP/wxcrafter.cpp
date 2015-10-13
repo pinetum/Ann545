@@ -83,7 +83,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_L1neurons, 0, wxALL, 5);
     
-    m_staticText57 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate u0"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticText57 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate 𝝁0"), wxDefaultPosition, wxSize(-1,-1), 0);
     
     flexGridSizer49->Add(m_staticText57, 0, wxALL, 5);
     
@@ -133,7 +133,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer67->Add(m_textCtrl_L2neurons, 0, wxALL, 5);
     
-    m_staticText73 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate u min"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticText73 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate 𝝁min"), wxDefaultPosition, wxSize(-1,-1), 0);
     
     flexGridSizer67->Add(m_staticText73, 0, wxALL, 5);
     

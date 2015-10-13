@@ -113,21 +113,44 @@ wxThread::ExitCode MLP::Entry(){
                     continue;
                 cv::Mat input = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(0, m_nInputs));                
                 cv::Mat output_desired = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
-                cv::Mat response_L1, response_L2, response_L3;
-                response_L1 = input*m_weight_l1;
-                Sigmod_tan(&response_L1);
                 
-                response_L2 = response_L1*m_weight_l2;
-                Sigmod_tan(&response_L2);
+                cv::Mat summation_L1, summation_L2, summation_L3, output_L1, output_L2, output_L3;
                 
-                response_L3 = response_L2*m_weight_l3;
-                Sigmod_tan(&response_L3);
                 
+                //Layer 1
+                summation_L1 = input*m_weight_l1;
+                output_L1 = summation_L1.clone();
+                Sigmod_tan(&output_L1);
+                
+                
+                
+                //Layer 2
+                summation_L2 = summation_L1*m_weight_l2;
+                output_L2 = summation_L2.clone();
+                Sigmod_tan(&output_L2);
+                
+                //Layer 3 
+                summation_L3 = summation_L2*m_weight_l3;
+                output_L3 = summation_L3.clone();
+                Sigmod_tan(&output_L3);
                 
                 //SE(train)
-                cv::Mat error = output_desired - response_L3 ;
-                cv::pow(error, 2, error);
-                MSE_training_Fold += error;
+                cv::Mat error = output_desired - output_L3 ;
+                cv::Mat errorSquare;
+                cv::pow(error, 2, errorSquare);
+                MSE_training_Fold += errorSquare;
+                
+                
+                // update Layer 3 weight
+                Sigmod_tanDerivative(&summation_L3);
+                //cv::Mat thelta = error.mul(summation_L3);
+                //m_weight_l3 = m_weight_l3 + getLearningRate(i_iteration)*thelta*output_L2;
+                
+                
+                // update Layer 2 weight 
+                
+                // update Layer 1 weight
+                
                 
                 
             } // training for loop end

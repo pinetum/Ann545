@@ -1080,7 +1080,7 @@
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Label:",
-																			"m_value":	"Learning Rate u0"
+																			"m_value":	"Learning Rate 𝝁0"
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Wrap:",
@@ -1803,7 +1803,7 @@
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Label:",
-																			"m_value":	"Learning Rate u min"
+																			"m_value":	"Learning Rate 𝝁min"
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Wrap:",
