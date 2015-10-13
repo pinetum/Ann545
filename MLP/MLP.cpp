@@ -64,12 +64,19 @@ wxThread::ExitCode MLP::Entry(){
     // data scaling (perpare m_data_scaled2train)
     dataScale();
     // inital weight...
-    m_weight_l1.create(m_nInputs,       m_nNeuronsL1,   CV_64FC1);
-    m_weight_l2.create(m_nNeuronsL1,    m_nNeuronsL2,   CV_64FC1);
-    m_weight_l3.create(m_nNeuronsL2,    m_nClasses,     CV_64FC1);
-    cv::randu(m_weight_l1, cv::Scalar(0), cv::Scalar(0.4));
-    cv::randu(m_weight_l2, cv::Scalar(0), cv::Scalar(0.4));
-    cv::randu(m_weight_l3, cv::Scalar(0), cv::Scalar(0.4));
+    m_weight_l1.create(m_nInputs,       m_nNeuronsL1,   CV_64F);
+    m_weight_l2.create(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
+    m_weight_l3.create(m_nNeuronsL2,    m_nClasses,     CV_64F);
+    cv::randu(m_weight_l1, cv::Scalar(double(0)), cv::Scalar(double(0.6)));
+    cv::randu(m_weight_l2, cv::Scalar(double(0)), cv::Scalar(double(0.6)));
+    cv::randu(m_weight_l3, cv::Scalar(double(0)), cv::Scalar(double(0.6)));
+    // momentum weight updating...
+    cv::Mat m_weight_momentum_l1, m_weight_momentum_l2, m_weight_momentum_l3;
+    m_weight_momentum_l1 = cv::Mat::zeros(m_nInputs,       m_nNeuronsL1,   CV_64F);
+    m_weight_momentum_l2 = cv::Mat::zeros(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
+    m_weight_momentum_l3 = cv::Mat::zeros(m_nNeuronsL2,    m_nClasses,     CV_64F);
+    
+    
     
     writeMat("./inital_W1.txt", &m_weight_l1);
     writeMat("./inital_W2.txt", &m_weight_l2);
@@ -148,12 +155,26 @@ wxThread::ExitCode MLP::Entry(){
                 Sigmod_tanDerivative(&derivate_L3);
                 cv::Mat delta_L3 = error.mul(summation_L3); 
                 
-                for(int i =0; i< m_weight_l3.rows; i++)
+                double a;
+                for(int i =0; i < m_weight_l3.rows; i++)
                 {
-                    for(int j=0; j< m_weight_l3.cols; j++)
+                    for(int j=0; j < m_weight_l3.cols; j++)
                     {
-                        m_weight_l3.at<double>(i, j) = m_weight_l3.at<double>(i, j) +
-                                                        learnRate*delta_L3.at<double>(0, i)*output_L2.at<double>(0, j);
+                        
+                        a = (double)delta_L3.at<double>(0, j) * (double)output_L2.at<double>(0, i);
+                        if(m_bMomentum)
+                        {
+                            m_weight_l3.at<double>(i, j) += learnRate * ( a + m_dMomentumAlpha * m_weight_momentum_l3.at<double>(i, j));
+                            m_weight_momentum_l3.at<double>(i, j) = a;
+                        }
+                        else
+                        {
+                            m_weight_l3.at<double>(i, j) += learnRate * a ;
+                        }
+//                        wxLogMessage(wxString::Format("%f+%f*%f*%f", m_weight_l3.at<double>(i, j)
+//                                                    , learnRate
+//                                                    , delta_L3.at<double>(0, j),
+//                                                    output_L2.at<double>(0, i)));
                     }
                 }
                 
@@ -196,8 +217,8 @@ wxThread::ExitCode MLP::Entry(){
                 MSE_valudation_Fold += error;
             }// validation for loop end
             
-            writeMat("MSE_valudation_Fold.csv", &MSE_valudation_Fold);
-            writeMat("MSE_training_Fold.csv", &MSE_training_Fold);
+            //writeMat("MSE_valudation_Fold.csv", &MSE_valudation_Fold);
+            //writeMat("MSE_training_Fold.csv", &MSE_training_Fold);
             
             
             //MSE(fold)
@@ -319,6 +340,7 @@ void MLP::writeMat(wxString outputName, cv::Mat* data)
         tfile.AddLine(str_line);
     }
     tfile.Write();
+    tfile.Close();
 }
 void MLP::openSampleFile(wxString fileName){readMat(fileName, &m_data_input);}
 void MLP::readDataLine(cv::Mat* data, wxString line)
