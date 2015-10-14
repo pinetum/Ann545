@@ -1,6 +1,6 @@
 #include "MLP.h"
 #include <wx/tokenzr.h>
-#include <wx/log.h>
+
 #include <wx/textfile.h>
 #include <vector>
 
@@ -144,23 +144,29 @@ wxThread::ExitCode MLP::Entry(){
                 cv::Mat errorSquare;
                 cv::pow(error.clone(), 2, errorSquare);
                 MSE_training_Fold += errorSquare;
-                
-                
-                
-                
+  
                 // update weight
                 double learnRate = getLearningRate(i_iteration);
                 // update Layer 3 weight
                 cv::Mat derivate_L3 = summation_L3.clone();
+                
                 Sigmod_tanDerivative(&derivate_L3);
+                if(!cv::checkRange(derivate_L3))
+                {
+                    writeMat(wxString::Format("NanL3X%d.txt", i_dataRows), &summation_L3);
+                    writeMat(wxString::Format("NanL3Y%d.txt", i_dataRows), &derivate_L3);
+                    break;
+                }
                 cv::Mat delta_L3 = error.mul(summation_L3); 
+                
+                
+                
                 
                 double a;
                 for(int i =0; i < m_weight_l3.rows; i++)
                 {
                     for(int j=0; j < m_weight_l3.cols; j++)
                     {
-                        
                         a = (double)delta_L3.at<double>(0, j) * (double)output_L2.at<double>(0, i);
                         if(m_bMomentum)
                         {
@@ -170,30 +176,81 @@ wxThread::ExitCode MLP::Entry(){
                         else
                         {
                             m_weight_l3.at<double>(i, j) += learnRate * a ;
-                        }
-//                        wxLogMessage(wxString::Format("%f+%f*%f*%f", m_weight_l3.at<double>(i, j)
-//                                                    , learnRate
-//                                                    , delta_L3.at<double>(0, j),
-//                                                    output_L2.at<double>(0, i)));
+                        }   
                     }
                 }
                 
                 
                 
-//                // update Layer 2 weight 
-//                cv::Mat derivate_L2 = summation_L2.clone();
-//                Sigmod_tanDerivative(&derivate_L2);
-//                cv::Mat delta_L2 = delta_L3*m_weight_l3*derivate_L2;
-//                m_weight_l2 = m_weight_l2 + learnRate*delta_L2*output_L1;
-//               
-//                
-//                
-//                // update Layer 1 weight
-//                cv::Mat derivate_L1 = summation_L1.clone();
-//                Sigmod_tanDerivative(&derivate_L1);
-//                cv::Mat delta_L1 = delta_L2*m_weight_l2*derivate_L1;
-//                //m_weight_l1 = m_weight_l1 + learnRate*delta_L1*input;
-//               
+                // update Layer 2 weight 
+                cv::Mat derivate_L2 = summation_L2.clone();
+                Sigmod_tanDerivative(&derivate_L2);
+                if(!cv::checkRange(derivate_L2))
+                {
+                    writeMat(wxString::Format("NanL2X%d.txt", i_dataRows), &summation_L2);
+                    writeMat(wxString::Format("NanL2Y%d.txt", i_dataRows), &derivate_L2);
+                    break;
+                }
+//                wxLogMessage(wxString::Format("%d,%d  %d,%d  %d,%d", delta_L3.rows, delta_L3.cols,
+//                                                                    m_weight_l3.rows, m_weight_l3.cols,
+//                                                                    derivate_L2.rows, derivate_L2.cols));
+                cv::Mat delta_L2 = (delta_L3*m_weight_l3.t() ).mul(derivate_L2);
+                
+                for(int i =0; i < m_weight_l2.rows; i++)
+                {
+                    for(int j=0; j < m_weight_l2.cols; j++)
+                    {
+                        a = (double)delta_L2.at<double>(0, j) * (double)output_L1.at<double>(0, i);
+                        if(m_bMomentum)
+                        {
+                            m_weight_l2.at<double>(i, j) += learnRate * ( a + m_dMomentumAlpha * m_weight_momentum_l2.at<double>(i, j));
+                            m_weight_momentum_l2.at<double>(i, j) = a;
+                        }
+                        else
+                        {
+                            m_weight_l2.at<double>(i, j) += learnRate * a ;
+                        }   
+                    }
+                }
+                
+                
+                
+               
+                
+           
+                // update Layer 1 weight
+                cv::Mat derivate_L1 = summation_L1.clone();
+                Sigmod_tanDerivative(&derivate_L1);
+                if(!cv::checkRange(derivate_L1))
+                {
+                    writeMat(wxString::Format("NanL2X%d.txt", i_dataRows), &summation_L2);
+                    writeMat(wxString::Format("NanL2Y%d.txt", i_dataRows), &derivate_L2);
+                    break;
+                }
+                wxLogMessage(wxString::Format("%d,%d  %d,%d  %d,%d", delta_L2.rows, delta_L2.cols,
+                                                                    m_weight_l2.rows, m_weight_l2.cols,
+                                                                    derivate_L1.rows, derivate_L1.cols));
+                cv::Mat delta_L1 = delta_L2*m_weight_l2*(derivate_L1.t());
+//                for(int i =0; i < m_weight_l2.rows; i++)
+//                {
+//                    for(int j=0; j < m_weight_l2.cols; j++)
+//                    {
+//                        a = (double)delta_L1.at<double>(0, j) * (double)input.at<double>(0, i);
+//                        if(m_bMomentum)
+//                        {
+//                            m_weight_l1.at<double>(i, j) += learnRate * ( a + m_dMomentumAlpha * m_weight_momentum_l1.at<double>(i, j));
+//                            m_weight_momentum_l1.at<double>(i, j) = a;
+//                        }
+//                        else
+//                        {
+//                            m_weight_l1.at<double>(i, j) += learnRate * a ;
+//                        }   
+//                    }
+//                }
+                
+                
+                
+                // update weight end
                 
             } // training for loop end
             

@@ -4,7 +4,7 @@
 #include <wx/string.h>
 #include <wx/thread.h>
 #include <wx/event.h> 
-
+#include <wx/log.h>
 
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MLP_START,        wxThreadEvent);
@@ -48,13 +48,13 @@ public:
     {
         cv::exp(*x*-2*slope, *x);
         *x = (-2**x+cv::Scalar(1) )/(2**x+cv::Scalar(1));
+        
     }
     void Sigmod_tanDerivative(cv::Mat* x, double slope = 0.5)
     {
         Sigmod_tan(x, slope);
         *x = slope *( (cv::Scalar(1)+*x).mul(cv::Scalar(1)-*x));
     }
-    
     
     
     
