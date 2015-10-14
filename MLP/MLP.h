@@ -46,9 +46,16 @@ public:
         { return (m_dInitalLearningRate - m_dMinLearningRate) / (1+exp(slope*(i_iteration - m_nLearningRateShift)) ) + m_dMinLearningRate;}
     void Sigmod_tan(cv::Mat* x, double slope = 0.5)
     {
-        cv::exp(*x*-2*slope, *x);
-        *x = (-2**x+cv::Scalar(1) )/(2**x+cv::Scalar(1));
-        
+        //writeMat("Sin.txt", x);
+//        cv::Mat tempP,tempN;
+//        cv::exp(*x*slope, tempP);
+//        cv::exp(*x*slope, tempN);
+//        *x = (tempP-tempN)/(tempP+tempN);
+        cv::Mat temp;
+        cv::exp(*x*2*slope, temp);
+        //writeMat("expOut.txt", &temp);
+        *x = (temp-cv::Scalar(1) )/(temp+cv::Scalar(1));
+        //writeMat("Sout.txt", x);
     }
     void Sigmod_tanDerivative(cv::Mat* x, double slope = 0.5)
     {
