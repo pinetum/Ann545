@@ -67,19 +67,15 @@ wxThread::ExitCode MLP::Entry(){
     m_weight_l1.create(m_nInputs,       m_nNeuronsL1,   CV_64F);
     m_weight_l2.create(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
     m_weight_l3.create(m_nNeuronsL2,    m_nClasses,     CV_64F);
-    cv::randu(m_weight_l1, cv::Scalar(double(0)), cv::Scalar(double(0.6)));
-    cv::randu(m_weight_l2, cv::Scalar(double(0)), cv::Scalar(double(0.6)));
-    cv::randu(m_weight_l3, cv::Scalar(double(0)), cv::Scalar(double(0.6)));
+    cv::randu(m_weight_l1, cv::Scalar(double(0.1)), cv::Scalar(double(0.4)));
+    cv::randu(m_weight_l2, cv::Scalar(double(0.1)), cv::Scalar(double(0.4)));
+    cv::randu(m_weight_l3, cv::Scalar(double(0.1)), cv::Scalar(double(0.4)));
     // momentum weight updating...
     cv::Mat m_weight_momentum_l1, m_weight_momentum_l2, m_weight_momentum_l3;
     m_weight_momentum_l1 = cv::Mat::zeros(m_nInputs,       m_nNeuronsL1,   CV_64F);
     m_weight_momentum_l2 = cv::Mat::zeros(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
     m_weight_momentum_l3 = cv::Mat::zeros(m_nNeuronsL2,    m_nClasses,     CV_64F);
     
-    cv::Mat weight_lastL1, weight_lastL2, weight_lastL3;
-    weight_lastL1 = m_weight_l1.clone();
-    weight_lastL2 = m_weight_l2.clone();
-    weight_lastL3 = m_weight_l3.clone();
     
     writeMat("./inital_W1.txt", &m_weight_l1);
     writeMat("./inital_W2.txt", &m_weight_l2);
@@ -129,25 +125,28 @@ wxThread::ExitCode MLP::Entry(){
                 cv::Mat input = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(0, m_nInputs));                
                 cv::Mat output_desired = m_data_scaled2train(cv::Range(i_dataRows, i_dataRows+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
                 
-                cv::Mat summation_L1, summation_L2, summation_L3, output_L1, output_L2, output_L3;
-                
+                cv::Mat summation_L1, summation_L2, summation_L3;
+                cv::Mat output_L1, output_L2, output_L3;
+                cv::Mat derivate_L1;
+                cv::Mat derivate_L2;
+                cv::Mat derivate_L3;
                 
                 // get network work response
                 
                 //Layer 1
                 summation_L1 = input*m_weight_l1;
                 output_L1 = summation_L1.clone();
-                binSigmoid(&output_L1);
+                binSigmoid(&output_L1, &derivate_L1);
                 
                 //Layer 2
                 summation_L2 = output_L1*m_weight_l2;
                 output_L2 = summation_L2.clone();
-                binSigmoid(&output_L2);
+                binSigmoid(&output_L2, &derivate_L2);
                 
                 //Layer 3 
                 summation_L3 = output_L2*m_weight_l3;
                 output_L3 = summation_L3.clone();
-                binSigmoid(&output_L3);
+                binSigmoid(&output_L3, &derivate_L3);
                 
                 
                 //SE(train)
@@ -158,50 +157,31 @@ wxThread::ExitCode MLP::Entry(){
   
                 // update weight (sequential update)
                 
-                weight_lastL1 = m_weight_l1.clone();
-                weight_lastL2 = m_weight_l2.clone();
-                weight_lastL3 = m_weight_l3.clone();
-                
+            
                 double learnRate = getLearningRate(i_iteration);
                 // update Layer 3 weight
-                cv::Mat derivate_L3 = summation_L3.clone();
-                binSigmoidDerivative(&derivate_L3);
+                //cv::Mat derivate_L3 = summation_L3.clone();
+                //binSigmoidDerivative(&derivate_L3);
                 if(!cv::checkRange(derivate_L3))
                 {
                     wxLogMessage("---nan---");
                     writeMat(wxString::Format("NanL3X%d.txt", i_dataRows), &summation_L3);
                     writeMat(wxString::Format("NanL3Y%d.txt", i_dataRows), &derivate_L3);
-                                      
+                    writeMat("./end_W1.txt", &m_weight_l1);
+                    writeMat("./end_W2.txt", &m_weight_l2);
+                    writeMat("./end_W3.txt", &m_weight_l3);
                     break;
                 }
-                cv::Mat delta_L3 = error.mul(summation_L3); 
-                double a;
-                for(int i =0; i < m_weight_l3.rows; i++)
-                {
-                    for(int j=0; j < m_weight_l3.cols; j++)
-                    {
-                        if(j >= delta_L3.cols)
-                            wxLogMessage("fuckL3 delta");
-                        if(i >= output_L2.cols)
-                            wxLogMessage("fuckL3 output");
-                        a = (double)delta_L3.at<double>(0, j) * (double)output_L2.at<double>(0, i);
-                        if(m_bMomentum)
-                        {
-                            m_weight_l3.at<double>(i, j) += learnRate * ( a + m_dMomentumAlpha * m_weight_momentum_l3.at<double>(i, j));
-                            m_weight_momentum_l3.at<double>(i, j) = a;
-                        }
-                        else
-                        {
-                            m_weight_l3.at<double>(i, j) += learnRate * a ;
-                            if(history)
-                                wxLogMessage(wxString::Format("epoch:%d,fold:%d,dataIndex:%d,W3(%d,%d):%f+= u * %f",
-                                                            i_iteration, i_kFold, i_dataRows, i, j, m_weight_l3.at<double>(i, j), a));
-                        }   
-                    }
-                }
+                
+                cv::Mat delta_L3 = error.mul(derivate_L3); 
+                
+                m_weight_l3 += (delta_L3.t()*output_L2).t()*learnRate;
+                
+                
+
                 // update Layer 2 weight 
-                cv::Mat derivate_L2 = summation_L2.clone();
-                binSigmoidDerivative(&derivate_L2);
+                //cv::Mat derivate_L2 = summation_L2.clone();
+                //binSigmoidDerivative(&derivate_L2);
                 if(!cv::checkRange(derivate_L2))
                 {
                     wxLogMessage("---nan---");
@@ -209,32 +189,10 @@ wxThread::ExitCode MLP::Entry(){
                     writeMat(wxString::Format("NanL2Y%d.txt", i_dataRows), &derivate_L2);
                     break;
                 }
-                //cv::Mat delta_L2 = (delta_L3*m_weight_l3.t() ).mul(derivate_L2);
-                cv::Mat delta_L2 = (delta_L3*weight_lastL3.t() ).mul(derivate_L2);
+                cv::Mat delta_L2 = (delta_L3*m_weight_l3.t() ).mul(derivate_L2);
+                m_weight_l2 += (delta_L2.t()*output_L1).t()*learnRate;
                 
-                for(int i =0; i < m_weight_l2.rows; i++)
-                {
-                    for(int j=0; j < m_weight_l2.cols; j++)
-                    {
-                        if(j >= delta_L2.cols)
-                            wxLogMessage("fuckL2 delta");
-                        if(i >= output_L1.cols)
-                            wxLogMessage("fuckL2 output");
-                        a = (double)delta_L2.at<double>(0, j) * (double)output_L1.at<double>(0, i);
-                        if(m_bMomentum)
-                        {
-                            m_weight_l2.at<double>(i, j) += learnRate * ( a + m_dMomentumAlpha * m_weight_momentum_l2.at<double>(i, j));
-                            m_weight_momentum_l2.at<double>(i, j) = a;
-                        }
-                        else
-                        {
-                            m_weight_l2.at<double>(i, j) += learnRate * a ;
-                            if(history)
-                                wxLogMessage(wxString::Format("epoch:%d,fold:%d,dataIndex:%d,W2(%d,%d):%f+= u * %f",
-                                                            i_iteration, i_kFold, i_dataRows, i, j, m_weight_l2.at<double>(i, j), a));
-                        }   
-                    }
-                }
+                
                 
                 
                 
@@ -242,8 +200,8 @@ wxThread::ExitCode MLP::Entry(){
                 
            
                 // update Layer 1 weight
-                cv::Mat derivate_L1 = summation_L1.clone();
-                binSigmoidDerivative(&derivate_L1);
+                //cv::Mat derivate_L1 = summation_L1.clone();
+                //binSigmoidDerivative(&derivate_L1);
                 if(!cv::checkRange(derivate_L1))
                 {
                     wxLogMessage("---nan---");
@@ -251,33 +209,10 @@ wxThread::ExitCode MLP::Entry(){
                     writeMat(wxString::Format("NanL1Y%d.txt", i_dataRows), &derivate_L2);
                     break;
                 }
-                //cv::Mat delta_L1 = (delta_L2*m_weight_l2.t()).mul(derivate_L1);
-                cv::Mat delta_L1 = (delta_L2*weight_lastL2.t()).mul(derivate_L1);
+                cv::Mat delta_L1 = (delta_L2*m_weight_l2.t()).mul(derivate_L1);
+                m_weight_l1 += (delta_L1.t()*input).t()*learnRate;
                 
-                for(int i =0; i < m_weight_l1.rows; i++)
-                {
-                    for(int j=0; j < m_weight_l1.cols; j++)
-                    {
-                        if(j >= delta_L1.cols)
-                            wxLogMessage("fuckL1 delta");
-                        if(i >= input.cols)
-                            wxLogMessage("fuckL1 output");
-                        a = (double)delta_L1.at<double>(0, j) * (double)input.at<double>(0, i);
-                        if(m_bMomentum)
-                        {
-                            m_weight_l1.at<double>(i, j) += learnRate * ( a + m_dMomentumAlpha * m_weight_momentum_l1.at<double>(i, j));
-                            m_weight_momentum_l1.at<double>(i, j) = a;
-                            
-                        }
-                        else
-                        {
-                            m_weight_l1.at<double>(i, j) += learnRate * a ;
-                            if(history)
-                                wxLogMessage(wxString::Format("epoch:%d,fold:%d,dataIndex:%d,W1(%d,%d):%f+= u * %f",
-                                                            i_iteration, i_kFold, i_dataRows, i, j, m_weight_l1.at<double>(i, j), a));
-                        }   
-                    }
-                }
+                
                 
                 
                 
@@ -366,7 +301,7 @@ void MLP::dataScale()
     {
         double min, max;
         cv::minMaxLoc(m_data_input.col(i), &min, &max);
-        cv::normalize(m_data_input.col(i), m_data_scaled2train.col(i), 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
+        cv::normalize(m_data_input.col(i), m_data_scaled2train.col(i), 0.001, 0.999, cv::NORM_MINMAX, -1, cv::Mat() );
            
     }
                    ///////-----desired oupput-------///////

@@ -57,18 +57,20 @@ public:
         *x = slope *( (cv::Scalar(1)+*x).mul(cv::Scalar(1)-*x));
         
     }
-    void binSigmoid(cv::Mat* x, double slope = 0.5)
+    void binSigmoid(cv::Mat* x, cv::Mat* x_der = NULL, double slope = 0.5)
     {
         cv::Mat temp;
         cv::exp(*x*slope*-1, temp);
-        *x = 1/(cv::Scalar(1)+temp);
+        *x = 1.0/(cv::Scalar(1)+temp);
+        if(x_der != NULL)
+            *x_der = (  cv::Scalar(1) - *x ).mul(*x)* slope;
     }
-    void binSigmoidDerivative(cv::Mat* x, double slope = 0.5)
-    {
-        cv::Mat temp;
-        cv::exp(*x*slope*-1, temp);
-        cv::pow((slope*temp)/(cv::Scalar(1)+temp), 2, *x);
-    }
+//    void binSigmoidDerivative(cv::Mat* x, double slope = 0.5)
+//    {
+//        cv::Mat temp;
+//        cv::exp(*x*slope*-1, temp);
+//        cv::pow((slope*temp)/(cv::Scalar(1)+temp), 2, *x);
+//    }
     
     
     void openSampleFile(wxString fileName);
