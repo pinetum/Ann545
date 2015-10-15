@@ -14,6 +14,7 @@ public:
     bool m_bMLPrunning;
     int m_nCPUs;
     MLP* m_MLP;
+    wxString pathName;
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     wxString getTimer();

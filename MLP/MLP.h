@@ -5,10 +5,14 @@
 #include <wx/thread.h>
 #include <wx/event.h> 
 #include <wx/log.h>
-
+#include <vector>
+#include <libiomp/omp.h>
+#include <wx/tokenzr.h>
+#include <wx/textfile.h>
 
 #define MLP_ACTIVATION_BINARY       0
 #define MLP_ACTIVATION_BIPOLOR      1
+
 #define MLP_LEARNING_ADJ_STC        0
 #define MLP_LEARNING_ADJ_EXPDEC     1
 #define MLP_LEARNING_ADJ_BINSIG     2
@@ -20,6 +24,7 @@ wxDECLARE_EVENT(wxEVT_COMMAND_MLP_START,        wxThreadEvent);
 wxDECLARE_EVENT(wxEVT_COMMAND_MLP_UPDATE,       wxThreadEvent);
 wxDECLARE_EVENT(wxEVT_COMMAND_MLP_UPDATE_PG,       wxThreadEvent);
 wxDECLARE_EVENT(wxEVT_COMMAND_MLP_COMPLETE,     wxThreadEvent);
+
 
 
 
@@ -35,6 +40,12 @@ public:
     cv::Mat     m_weight_l1;                // layer 1 weight
     cv::Mat     m_weight_l2;                // layer 2 weight
     cv::Mat     m_weight_l3;                // layer 3 weight
+    cv::Mat     m_weight_terminal_l1;       // layer 1 weight
+    cv::Mat     m_weight_terminal_l2;       // layer 2 weight
+    cv::Mat     m_weight_terminal_l3;       // layer 3 weight
+    
+    
+    
     
     int         m_nNeuronsL1;               // number of neurons in hidden layer 1
     int         m_nNeuronsL2;               // number of neurons in hidden layer 2
@@ -46,6 +57,8 @@ public:
     
     int         m_LearnRateAdjMethod;
     int         m_ActivationType;
+    
+    int         m_nTerminalThreshold;       //
     
     bool        m_bMomentum;                // update weight with momentum ?
     double      m_dMomentumAlpha;           // momentum Alpha
@@ -144,13 +157,87 @@ public:
                 return m_dInitalLearningRate/ ((1+i_iteration)/m_nLearningRateShift);
         }
     }
-    
+    void shuffelRow(cv::Mat* x)
+    {
+        std::vector<int > s;
+        #pragma omp parallel for
+        for(int i = 0; i< x->rows; i++)
+            s.push_back(i);
+        cv::randShuffle(s);
+
+        cv::Mat o(x->rows, x->cols, x->type());
+        #pragma omp parallel for
+        for (int i = 0; i <x->rows; i++)
+            o.row(i) = x->row(s[i]) + 0 ;
+        *x = o;
+    }
     
 private:
     wxEvtHandler* m_pHandler;
-    void readMat(wxString inputName, cv::Mat* data);
-    void writeMat(wxString outputName, cv::Mat* data);
-    void readDataLine(cv::Mat* data, wxString line);
+    void readDataLine(cv::Mat* data, wxString line)
+    {
+        if(!line.Contains(","))
+            return;
+        std::vector<double> ary_line;
+        wxStringTokenizer tokenizer(line, ",");
+        while (tokenizer.HasMoreTokens())
+        {
+            wxString    token = tokenizer.GetNextToken();
+            double      v;
+            if(token.ToDouble(&v))
+            {
+                ary_line.push_back(v);
+            }
+            else
+            {
+                wxLogMessage(wxString::Format("readDataLine error : wxString to double..."));
+            }
+        }
+        cv::Mat row(1, ary_line.size(), CV_64F, &ary_line.front());
+        if(data->rows < 1)
+            *data = row.clone();
+        else        
+            data->push_back(row);
+    }
+    void readMat(wxString inputName, cv::Mat* data)
+    {
+        wxString    str_buffer = "";
+        wxTextFile  tfile;
+        tfile.Open(inputName);
+        str_buffer = tfile.GetFirstLine();
+        readDataLine(data, str_buffer);
+        while(!tfile.Eof())
+        {
+            str_buffer = tfile.GetNextLine();
+            readDataLine(data, str_buffer);
+        }
+        tfile.Close();
+    }
+    void writeMat(wxString outputName, cv::Mat* data, wxString info = "")
+    {
+        wxTextFile  tfile;
+        tfile.Create(outputName);
+        for(int j = 0; j < data->rows; j++)
+        {
+            wxString str_line = "";
+            for(int i = 0; i < data->cols; i++)
+            {
+                if(i != 0) //結尾逗號問題
+                    str_line.append(",");
+                str_line.append(wxString::Format("%f",data->at<double>(cv::Point(i, j))));
+            }
+            tfile.AddLine(str_line);
+        }
+        
+        tfile.AddLine("");
+        tfile.AddLine(info);
+        
+        
+        tfile.Write();
+        tfile.Close();
+    }
+
+    
 
 };
 #endif // MLP_H

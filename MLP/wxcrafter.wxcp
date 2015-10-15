@@ -2270,7 +2270,7 @@
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Choices:",
-																			"m_value":	"Search‐then‐converge;;Exponential decay;Binary Sigmoid"
+																			"m_value":	"Search‐then‐converge;Exponential decay;Binary Sigmoid"
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Selection:",
@@ -2420,7 +2420,7 @@
 																		}, {
 																			"type":	"multi-string",
 																			"m_label":	"Choices:",
-																			"m_value":	"Binary Sigmoid;bipolar sigmoid;;"
+																			"m_value":	"Binary Sigmoid;bipolar sigmoid;"
 																		}, {
 																			"type":	"string",
 																			"m_label":	"Selection:",

@@ -27,7 +27,7 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
     
     m_staticText_CpuCores->SetLabel(wxString::Format("CPUs:%d", m_nCPUs));
-    m_textCtrl_IterationTimes->SetLabel("4");
+    m_textCtrl_IterationTimes->SetLabel("1500");
     m_textCtrl_L1neurons->SetLabel("6");
     m_textCtrl_L2neurons->SetLabel("8");
     m_textCtrl_LearnRateInital->SetLabel("0.5");
@@ -36,7 +36,7 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_KFold->SetLabel("10");
     m_textCtrl_MomentumAlpha->SetLabel("0.4");
     
-    
+    pathName = "";
     
     
 }
@@ -130,7 +130,7 @@ void MainFrame::OnAbout(wxCommandEvent& event)
 }
 void MainFrame::OnLoadData(wxCommandEvent& event)
 {
-    wxString pathName = "";
+    
     wxString fileType = _("All suported formats(*.*)|*.*");
     wxFileDialog* openDialog = new wxFileDialog(this,_("openFile"),wxEmptyString,wxEmptyString,fileType,wxFD_OPEN,wxDefaultPosition);
 	if(openDialog->ShowModal() == wxID_OK){
@@ -139,54 +139,44 @@ void MainFrame::OnLoadData(wxCommandEvent& event)
     openDialog->Destroy();
     if(pathName.length() == 0)
         MainFrame::showMessage("[LoadData]File error");
-    else
-    {
-        m_MLP = new MLP(this);
-        m_MLP->openSampleFile(pathName);
-    }
+    
+        
+    
 }
 void MainFrame::OnTrainModel(wxCommandEvent& event)
 {
-    if(!m_MLP->IsRunning())
-    {
-        double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration, d_nkFold, d_momentumAlpha;
-        m_textCtrl_L1neurons->GetValue().ToDouble(&d_nL1);
-        m_textCtrl_L2neurons->GetValue().ToDouble(&d_nL2);
-        m_textCtrl_LearnRateInital->GetValue().ToDouble(&d_rateIntial);
-        m_textCtrl_LearnRateMin->GetValue().ToDouble(&d_rateMin);
-        m_textCtrl_IterationTimes->GetValue().ToDouble(&d_iteration);
-        m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
-        m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
-        m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
-        m_MLP->SetParameter((int)d_nL1, 
-                            (int)d_nL2, 
-                            d_rateIntial, 
-                            d_rateMin, 
-                            d_rateShift, 
-                            d_iteration, 
-                            m_checkBox_Momentum->GetValue(),
-                            d_momentumAlpha,
-                            (int)d_nkFold,
-                            m_choice_LearnAdjust->GetSelection(),
-                            m_choice_TransferFunc->GetSelection());
-        m_MLP->Run();
-    }
+    m_MLP = new MLP(this);
+    m_MLP->openSampleFile(pathName);
+    
+    double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration, d_nkFold, d_momentumAlpha;
+    m_textCtrl_L1neurons->GetValue().ToDouble(&d_nL1);
+    m_textCtrl_L2neurons->GetValue().ToDouble(&d_nL2);
+    m_textCtrl_LearnRateInital->GetValue().ToDouble(&d_rateIntial);
+    m_textCtrl_LearnRateMin->GetValue().ToDouble(&d_rateMin);
+    m_textCtrl_IterationTimes->GetValue().ToDouble(&d_iteration);
+    m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
+    m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
+    m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
+    m_MLP->SetParameter((int)d_nL1, 
+                        (int)d_nL2, 
+                        d_rateIntial, 
+                        d_rateMin, 
+                        d_rateShift, 
+                        d_iteration, 
+                        m_checkBox_Momentum->GetValue(),
+                        d_momentumAlpha,
+                        (int)d_nkFold,
+                        m_choice_LearnAdjust->GetSelection(),
+                        m_choice_TransferFunc->GetSelection());
+    m_MLP->Run();
         
 }
 
 void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 {
-    if(m_MLP == NULL)
-        event.Enable(false);
-    else
-    {
-        
-        if(m_bMLPrunning)
-            event.Enable(false);
-        else
-            event.Enable(true);
-            
-    }
+    
+    event.Enable(!pathName.empty());
+
         
 }
 void MainFrame::OnUpdateParameterUI(wxUpdateUIEvent& event)
