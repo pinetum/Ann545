@@ -1,7 +1,7 @@
 #include "MainFrame.h"
 #include <wx/aboutdlg.h>
 #include <wx/filedlg.h>
-
+#include <wx/thread.h>
 
 wxDEFINE_EVENT(wxEVT_COMMAND_MLP_START,        wxThreadEvent);
 wxDEFINE_EVENT(wxEVT_COMMAND_MLP_UPDATE,       wxThreadEvent);
@@ -18,14 +18,15 @@ MainFrame::MainFrame(wxWindow* parent)
     m_pThis             = this; 
     m_MLP               = NULL;
     m_bMLPrunning       = false;
-    SetSize(600, 400);
+    m_nCPUs             = wxThread::GetCPUCount();
+    SetSize(-1, -1);
     Center();
     Bind(wxEVT_COMMAND_MLP_START, &MainFrame::OnMlpStart, this);
     Bind(wxEVT_COMMAND_MLP_UPDATE, &MainFrame::OnMlpUpdate, this);
     Bind(wxEVT_COMMAND_MLP_UPDATE_PG, &MainFrame::OnMlpUpdatePg, this);
     Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
     
-    
+    m_staticText_CpuCores->SetLabel(wxString::Format("CPUs:%d", m_nCPUs));
     m_textCtrl_IterationTimes->SetLabel("4");
     m_textCtrl_L1neurons->SetLabel("6");
     m_textCtrl_L2neurons->SetLabel("8");
@@ -34,6 +35,10 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_LearnRateShift->SetLabel("500");
     m_textCtrl_KFold->SetLabel("10");
     m_textCtrl_MomentumAlpha->SetLabel("0.4");
+    
+    
+    
+    
 }
 
 MainFrame::~MainFrame()
@@ -44,7 +49,7 @@ MainFrame::~MainFrame()
 void MainFrame::OnMlpStart(wxThreadEvent& evt)
 {
     startTimer();
-    showMessage("MLP start Running..");
+    showMessage("[MLP]start running..");
     m_bMLPrunning = true;
 }
 void MainFrame::OnMlpUpdate(wxThreadEvent& evt)
@@ -53,9 +58,10 @@ void MainFrame::OnMlpUpdate(wxThreadEvent& evt)
 }
 void MainFrame::OnMlpComplete(wxThreadEvent& evt)
 {
-    stopTimer("MLP Stop");
+    //stopTimer("MLP Stop");
     m_MLP = NULL;
     m_bMLPrunning = false;
+    showMessage(evt.GetString());
 }
 void MainFrame::OnMlpUpdatePg(wxThreadEvent& evt)
 {
@@ -63,7 +69,7 @@ void MainFrame::OnMlpUpdatePg(wxThreadEvent& evt)
     int total = m_MLP->m_nTotalIteration;
     m_gaugePg->SetValue(100*iteration/total);
     m_staticTextPg->SetLabel(wxString::Format("%d/%d", iteration, total));
-    
+    m_staticTextTimer->SetLabel(getTimer());
 }
 
 
@@ -95,14 +101,14 @@ wxString MainFrame::getTimer()
     hours           = minutes/60;
     minutes         = minutes - hours*60;
     
-    if(hours > 0)
-        str_time.Append(wxString::Format("%dh ",hours));
-    if(minutes > 0)
-        str_time.Append(wxString::Format("%dm ",minutes));
-    if(seconds > 0)
-        str_time.Append(wxString::Format("%ds ",seconds));
-    if(milliseconds > 0)
-        str_time.Append(wxString::Format("%dms ",milliseconds));
+    //if(hours > 0)
+        str_time.Append(wxString::Format("%02d:",hours));
+    //if(minutes > 0)
+        str_time.Append(wxString::Format("%02d:",minutes));
+    //if(seconds > 0)
+        str_time.Append(wxString::Format("%02d:",seconds));
+    //if(milliseconds > 0)
+        str_time.Append(wxString::Format("%03d",milliseconds));
     return str_time;
     
     
@@ -160,46 +166,28 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
                             d_iteration, 
                             m_checkBox_Momentum->GetValue(),
                             d_momentumAlpha,
-                            (int)d_nkFold);
+                            (int)d_nkFold,
+                            m_choice_LearnAdjust->GetSelection(),
+                            m_choice_TransferFunc->GetSelection());
         m_MLP->Run();
     }
         
 }
-void MainFrame::OnValidate(wxCommandEvent& event)
-{
-    wxString pathName = "";
-    wxString fileType = _("All suported formats(*.*)|*.*");
-    wxFileDialog* openDialog = new wxFileDialog(this,_("openFile"),wxEmptyString,wxEmptyString,fileType,wxFD_OPEN,wxDefaultPosition);
-	if(openDialog->ShowModal() == wxID_OK){
-        pathName = openDialog->GetPath();
-    }
-    openDialog->Destroy();
-    if(pathName.length() == 0)
-        MainFrame::showMessage("[Validate]File error");
-    else
-    {
-        startTimer();
-        stopTimer("MLP Validating");
-    }
-}
+
 void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 {
     if(m_MLP == NULL)
         event.Enable(false);
     else
     {
-        event.Enable(true);
-//        if(m_MLP->IsRunning())
-//            event.Enable(false);
-//        else
-//            event.Enable(true);
+        
+        if(m_bMLPrunning)
+            event.Enable(false);
+        else
+            event.Enable(true);
             
     }
         
-}
-void MainFrame::OnLoadModel(wxCommandEvent& event)
-{
-
 }
 void MainFrame::OnUpdateParameterUI(wxUpdateUIEvent& event)
 {

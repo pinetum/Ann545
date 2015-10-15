@@ -21,6 +21,9 @@ MLP::MLP(wxEvtHandler* pParent)
     m_bMomentum  = false;
     m_nKfold = 10;
     m_dDesiredOutput_rescale = 0.15;
+    m_dRatioTestingDatas = 0.2;
+    m_LearnRateAdjMethod = MLP_LEARNING_ADJ_BINSIG;
+    m_ActivationType = MLP_ACTIVATION_BINARY;
 }
 void MLP::SetParameter(  int n_nuronL1, 
                     int n_nuronL2, 
@@ -30,7 +33,9 @@ void MLP::SetParameter(  int n_nuronL1,
                     int n_TotalIteration,
                     bool b_Momentum,
                     double d_MomentumAlpha,
-                    int n_kFold)
+                    int n_kFold,
+                    int LearnRateAdjMethod,
+                    int ActivationType)
 {
     m_nNeuronsL1 = n_nuronL1;
     m_nNeuronsL2 = n_nuronL2;
@@ -41,6 +46,9 @@ void MLP::SetParameter(  int n_nuronL1,
     m_bMomentum  = b_Momentum;
     m_nKfold = n_kFold;
     m_dMomentumAlpha = d_MomentumAlpha;
+    m_LearnRateAdjMethod = LearnRateAdjMethod;
+    m_ActivationType = ActivationType;
+    
 }
 MLP::~MLP()
 {
@@ -136,24 +144,25 @@ wxThread::ExitCode MLP::Entry(){
                 //Layer 1
                 summation_L1 = input*m_weight_l1;
                 output_L1 = summation_L1.clone();
-                binSigmoid(&output_L1, &derivate_L1);
+                transfer(&output_L1, &derivate_L1);
                 
                 //Layer 2
                 summation_L2 = output_L1*m_weight_l2;
                 output_L2 = summation_L2.clone();
-                binSigmoid(&output_L2, &derivate_L2);
+                transfer(&output_L2, &derivate_L2);
                 
                 //Layer 3 
                 summation_L3 = output_L2*m_weight_l3;
                 output_L3 = summation_L3.clone();
-                binSigmoid(&output_L3, &derivate_L3);
+                transfer(&output_L3, &derivate_L3);
                 
                 
                 //SE(train)
                 cv::Mat error = output_desired - output_L3 ;
                 cv::Mat errorSquare;
                 cv::pow(error.clone(), 2, errorSquare);
-                MSE_training_Fold += errorSquare;
+                // summation square error
+                MSE_training_Fold += errorSquare; 
   
                 // update weight (sequential update)
                 
@@ -227,11 +236,11 @@ wxThread::ExitCode MLP::Entry(){
                 cv::Mat output_desired = m_data_scaled2train(cv::Range(i_validRows, i_validRows+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
                 cv::Mat response_L1, response_L2, response_L3;
                 response_L1 = input*m_weight_l1;
-                binSigmoid(&response_L1);
+                transfer(&response_L1);
                 response_L2 = response_L1*m_weight_l2;
-                binSigmoid(&response_L2);
+                transfer(&response_L2);
                 response_L3 = response_L2*m_weight_l3;
-                binSigmoid(&response_L3);
+                transfer(&response_L3);
                 
                 
                 //SE(train)
@@ -244,14 +253,15 @@ wxThread::ExitCode MLP::Entry(){
             //writeMat("MSE_training_Fold.csv", &MSE_training_Fold);
             
             
-            //MSE(fold)
+            
+            // mean square error
             dMSE_training_epoch += sqrt(cv::sum(MSE_training_Fold)[0]/(m_data_scaled2train.rows-i_end+i_strt));
             dMSE_validation_epoch += sqrt(cv::sum(MSE_valudation_Fold)[0]/(i_end-i_strt));
             
             
         }// kfold for loop end
         
-        //MSE(epoch)
+        //mean k-fold MSE(epoch)
         vRMSE_training.push_back(dMSE_training_epoch/(double)m_nKfold);
         vRMSE_validation.push_back(dMSE_validation_epoch/(double)m_nKfold);
         
@@ -260,6 +270,7 @@ wxThread::ExitCode MLP::Entry(){
         evt_update->SetInt(i_iteration);
         wxQueueEvent(m_pHandler, evt_update);
     }//epoch for loop end
+    
     
     
     //------------------------save files---------------------//
@@ -281,64 +292,76 @@ wxThread::ExitCode MLP::Entry(){
     
     // post event2handler4stop
     evt_end = new wxThreadEvent(wxEVT_COMMAND_MLP_COMPLETE);
-    evt_end->SetString("[MLP]Complete!");
+    evt_end->SetString(wxString::Format("[MLP]Complete, Accuracy = %f", getAccuracy()));
     wxQueueEvent(m_pHandler, evt_end);
     return (wxThread::ExitCode)0;
 }
 
-
-
-bool MLP::train()
-{
-    bool b_ret = true;
-
-    return b_ret;
-}
 void MLP::dataScale()
 {
-    m_data_scaled2train.create(m_data_input.rows, m_nInputs + m_nClasses, CV_64FC1);
+    cv::Mat rescaledResult(m_data_input.rows, m_nInputs + m_nClasses, CV_64FC1);
+    
+    // scale input colum
     for(int i =0; i < m_nInputs; i++)
-    {
-        double min, max;
-        cv::minMaxLoc(m_data_input.col(i), &min, &max);
-        cv::normalize(m_data_input.col(i), m_data_scaled2train.col(i), 0.001, 0.999, cv::NORM_MINMAX, -1, cv::Mat() );
-           
-    }
-                   ///////-----desired oupput-------///////
-    
-    // begin
-    m_data_scaled2train.col(m_nInputs) = (m_data_input.col(m_nInputs)-cv::Scalar(4))/-2; // 2>>1, 4>>0
-    cv::normalize(m_data_scaled2train.col(m_nInputs), 
-                    m_data_scaled2train.col(m_nInputs), 
+        cv::normalize(m_data_input.col(i), rescaledResult.col(i), 0.001, 0.999, cv::NORM_MINMAX, -1, cv::Mat() );
+                   
+    // scale oupput colum
+        // begin  2>>1, 4>>0
+    rescaledResult.col(m_nInputs) = (m_data_input.col(m_nInputs)-cv::Scalar(4))/-2; 
+    cv::normalize(rescaledResult.col(m_nInputs), 
+                    rescaledResult.col(m_nInputs), 
                     m_dDesiredOutput_rescale, 1 - m_dDesiredOutput_rescale,  // min, max
                     cv::NORM_MINMAX, -1, cv::Mat() );
-    // malignant
-    m_data_scaled2train.col(m_nInputs+1) = m_data_input.col(m_nInputs)*0.5-cv::Scalar(1); // if 4>>1, 2>>0
-    cv::normalize(m_data_scaled2train.col(m_nInputs+1), 
-                    m_data_scaled2train.col(m_nInputs+1), 
+        // malignant 4>>1, 2>>0
+    rescaledResult.col(m_nInputs+1) = m_data_input.col(m_nInputs)*0.5-cv::Scalar(1); // if 
+    cv::normalize(rescaledResult.col(m_nInputs+1), 
+                    rescaledResult.col(m_nInputs+1), 
                     m_dDesiredOutput_rescale, 1 - m_dDesiredOutput_rescale,  // min, max
                     cv::NORM_MINMAX, -1, cv::Mat() );
-    writeMat("./rescaled_input.txt", &m_data_scaled2train);
     
-}
-bool MLP::writeModule()
-{
+    // seperate scaled data to two part (training and testing)
+    int n_testDataRows  = m_dRatioTestingDatas*rescaledResult.rows;
+    m_data_scaled2test  = rescaledResult(cv::Range(0, n_testDataRows),cv::Range::all()).clone();
+    m_data_scaled2train = rescaledResult(cv::Range(n_testDataRows, rescaledResult.rows),cv::Range::all()).clone();
     
+    
+    writeMat("./m_data_scaled2test.txt", &m_data_scaled2test);
+    writeMat("./m_data_scaled2test.txt", &m_data_scaled2train);
 }
-bool MLP::readModule()
-{
 
-}
 double MLP::getAccuracy()
 {
-    double d_acc = 0;
-    return d_acc;
+    int n_timesCorrect  = 0;
+    for(int i= 0; i < m_data_scaled2test.rows; i++)
+    {
+        cv::Mat input = m_data_scaled2train(cv::Range(i, i+1), cv::Range(0, m_nInputs));                
+        cv::Mat output_desired = m_data_scaled2train(cv::Range(i, i+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
+        cv::Mat response_L1, response_L2, response_L3;
+        response_L1 = input*m_weight_l1;
+        transfer(&response_L1);
+        response_L2 = response_L1*m_weight_l2;
+        transfer(&response_L2);
+        response_L3 = response_L2*m_weight_l3;
+        transfer(&response_L3);
+        
+        cv::Point max_loc_response, max_loc_desert;
+        cv::minMaxLoc(response_L3, NULL, NULL, NULL, &max_loc_response);
+        cv::minMaxLoc(output_desired, NULL, NULL, NULL, &max_loc_desert);
+        
+         if(max_loc_response == max_loc_desert)
+             n_timesCorrect++;
+        
+        //SE(train)
+        
+    }
+    return (double)n_timesCorrect/m_data_scaled2test.rows;
 }
 void MLP::readMat(wxString inputName, cv::Mat* data)
 {
     wxString    str_buffer = "";
     wxTextFile  tfile;
     tfile.Open(inputName);
+    
     str_buffer = tfile.GetFirstLine();
     readDataLine(data, str_buffer);
     while(!tfile.Eof())
@@ -346,6 +369,7 @@ void MLP::readMat(wxString inputName, cv::Mat* data)
         str_buffer = tfile.GetNextLine();
         readDataLine(data, str_buffer);
     }
+    tfile.Close();
 }
 void MLP::writeMat(wxString outputName, cv::Mat* data)
 {
@@ -365,7 +389,7 @@ void MLP::writeMat(wxString outputName, cv::Mat* data)
     tfile.Write();
     tfile.Close();
 }
-void MLP::openSampleFile(wxString fileName){readMat(fileName, &m_data_input);}
+
 void MLP::readDataLine(cv::Mat* data, wxString line)
 {
     if(!line.Contains(","))

@@ -19,8 +19,11 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/arrstr.h>
 #include <wx/richtext/richtextctrl.h>
 #include <wx/gauge.h>
+#include <wx/grid.h>
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 #if wxVERSION_NUMBER >= 2900
@@ -34,30 +37,36 @@ class MainFrameBaseClass : public wxFrame
 {
 protected:
     wxPanel* m_mainPanel;
-    wxButton* m_buttonLoadModel;
     wxButton* m_buttonLoadData;
     wxButton* m_buttonTrain;
-    wxButton* m_buttonValidate;
+    wxStaticText* m_staticText_CpuCores;
     wxStaticText* m_staticText;
     wxStaticText* m_staticText51;
     wxTextCtrl* m_textCtrl_L1neurons;
+    wxStaticText* m_staticText69;
+    wxTextCtrl* m_textCtrl_L2neurons;
     wxStaticText* m_staticText57;
     wxTextCtrl* m_textCtrl_LearnRateInital;
     wxStaticText* m_staticText61;
     wxTextCtrl* m_textCtrl_LearnRateShift;
     wxStaticText* m_staticText91;
     wxTextCtrl* m_textCtrl_KFold;
-    wxStaticText* m_staticText69;
-    wxTextCtrl* m_textCtrl_L2neurons;
     wxStaticText* m_staticText73;
     wxTextCtrl* m_textCtrl_LearnRateMin;
     wxStaticText* m_staticText77;
     wxTextCtrl* m_textCtrl_IterationTimes;
     wxCheckBox* m_checkBox_Momentum;
     wxTextCtrl* m_textCtrl_MomentumAlpha;
+    wxStaticText* m_staticText111;
+    wxChoice* m_choice_LearnAdjust;
+    wxStaticText* m_staticText107;
+    wxChoice* m_choice_TransferFunc;
     wxRichTextCtrl* m_richTextCtrl;
     wxStaticText* m_staticTextPg;
     wxGauge* m_gaugePg;
+    wxStaticText* m_staticTextTimer;
+    wxPanel* m_panel121;
+    wxGrid* m_grid125;
     wxMenuBar* m_menuBar;
     wxMenu* m_name6;
     wxMenuItem* m_menuItem7;
@@ -66,40 +75,44 @@ protected:
     wxToolBar* m_mainToolbar;
 
 protected:
-    virtual void OnLoadModel(wxCommandEvent& event) { event.Skip(); }
     virtual void OnLoadData(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTrainModel(wxCommandEvent& event) { event.Skip(); }
     virtual void OnUpdateUI(wxUpdateUIEvent& event) { event.Skip(); }
-    virtual void OnValidate(wxCommandEvent& event) { event.Skip(); }
     virtual void OnUpdateParameterUI(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
 
 public:
-    wxButton* GetButtonLoadModel() { return m_buttonLoadModel; }
     wxButton* GetButtonLoadData() { return m_buttonLoadData; }
     wxButton* GetButtonTrain() { return m_buttonTrain; }
-    wxButton* GetButtonValidate() { return m_buttonValidate; }
+    wxStaticText* GetStaticText_CpuCores() { return m_staticText_CpuCores; }
     wxStaticText* GetStaticText() { return m_staticText; }
     wxStaticText* GetStaticText51() { return m_staticText51; }
     wxTextCtrl* GetTextCtrl_L1neurons() { return m_textCtrl_L1neurons; }
+    wxStaticText* GetStaticText69() { return m_staticText69; }
+    wxTextCtrl* GetTextCtrl_L2neurons() { return m_textCtrl_L2neurons; }
     wxStaticText* GetStaticText57() { return m_staticText57; }
     wxTextCtrl* GetTextCtrl_LearnRateInital() { return m_textCtrl_LearnRateInital; }
     wxStaticText* GetStaticText61() { return m_staticText61; }
     wxTextCtrl* GetTextCtrl_LearnRateShift() { return m_textCtrl_LearnRateShift; }
     wxStaticText* GetStaticText91() { return m_staticText91; }
     wxTextCtrl* GetTextCtrl_KFold() { return m_textCtrl_KFold; }
-    wxStaticText* GetStaticText69() { return m_staticText69; }
-    wxTextCtrl* GetTextCtrl_L2neurons() { return m_textCtrl_L2neurons; }
     wxStaticText* GetStaticText73() { return m_staticText73; }
     wxTextCtrl* GetTextCtrl_LearnRateMin() { return m_textCtrl_LearnRateMin; }
     wxStaticText* GetStaticText77() { return m_staticText77; }
     wxTextCtrl* GetTextCtrl_IterationTimes() { return m_textCtrl_IterationTimes; }
     wxCheckBox* GetCheckBox_Momentum() { return m_checkBox_Momentum; }
     wxTextCtrl* GetTextCtrl_MomentumAlpha() { return m_textCtrl_MomentumAlpha; }
+    wxStaticText* GetStaticText111() { return m_staticText111; }
+    wxChoice* GetChoice_LearnAdjust() { return m_choice_LearnAdjust; }
+    wxStaticText* GetStaticText107() { return m_staticText107; }
+    wxChoice* GetChoice_TransferFunc() { return m_choice_TransferFunc; }
     wxRichTextCtrl* GetRichTextCtrl() { return m_richTextCtrl; }
     wxStaticText* GetStaticTextPg() { return m_staticTextPg; }
     wxGauge* GetGaugePg() { return m_gaugePg; }
+    wxStaticText* GetStaticTextTimer() { return m_staticTextTimer; }
+    wxGrid* GetGrid125() { return m_grid125; }
+    wxPanel* GetPanel121() { return m_panel121; }
     wxPanel* GetMainPanel() { return m_mainPanel; }
     wxMenuBar* GetMenuBar() { return m_menuBar; }
     wxToolBar* GetMainToolbar() { return m_mainToolbar; }
