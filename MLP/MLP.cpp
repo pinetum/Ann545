@@ -4,7 +4,7 @@
 
 
 
-const char str_learnRateAdj[3][30] = {"Search‐then‐converge", "Exponential decay", "Binary Sigmoid"};
+const char str_learnRateAdj[3][30] = {"Search then converge", "Exponential decay", "Binary Sigmoid"};
 const char str_activation[3][30] = {"Binary Sigmoid", "Exponential decay", "bipolar sigmoid"};
 
 MLP::MLP(wxEvtHandler* pParent)
