@@ -29,11 +29,11 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_IterationTimes->SetLabel("4");
     m_textCtrl_L1neurons->SetLabel("6");
     m_textCtrl_L2neurons->SetLabel("8");
-    m_textCtrl_LearnRateInital->SetLabel("0.00005");
-    m_textCtrl_LearnRateMin->SetLabel("0.000000001");
-    m_textCtrl_LearnRateShift->SetLabel("2000");
+    m_textCtrl_LearnRateInital->SetLabel("0.5");
+    m_textCtrl_LearnRateMin->SetLabel("0.01");
+    m_textCtrl_LearnRateShift->SetLabel("500");
     m_textCtrl_KFold->SetLabel("10");
-    m_textCtrl_MomentumAlpha->SetLabel("0.002");
+    m_textCtrl_MomentumAlpha->SetLabel("0.4");
 }
 
 MainFrame::~MainFrame()

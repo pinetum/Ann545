@@ -44,25 +44,31 @@ public:
         { return slope*(1+getSigmod_tan(x, slope))*(1-getSigmod_tan(x, slope));}
     double getLearningRate(int i_iteration, double slope = 0.5)
         { return (m_dInitalLearningRate - m_dMinLearningRate) / (1+exp(slope*(i_iteration - m_nLearningRateShift)) ) + m_dMinLearningRate;}
-    void Sigmod_tan(cv::Mat* x, double slope = 0.5)
+    void tanh(cv::Mat* x, double slope = 0.5)
     {
-        //writeMat("Sin.txt", x);
-//        cv::Mat tempP,tempN;
-//        cv::exp(*x*slope, tempP);
-//        cv::exp(*x*slope, tempN);
-//        *x = (tempP-tempN)/(tempP+tempN);
         cv::Mat temp;
         cv::exp(*x*2*slope, temp);
-        //writeMat("expOut.txt", &temp);
         *x = (temp-cv::Scalar(1) )/(temp+cv::Scalar(1));
-        //writeMat("Sout.txt", x);
+       
     }
-    void Sigmod_tanDerivative(cv::Mat* x, double slope = 0.5)
+    void tanhDerivative(cv::Mat* x, double slope = 0.5)
     {
-        Sigmod_tan(x, slope);
+        tanh(x, slope);
         *x = slope *( (cv::Scalar(1)+*x).mul(cv::Scalar(1)-*x));
+        
     }
-    
+    void binSigmoid(cv::Mat* x, double slope = 0.5)
+    {
+        cv::Mat temp;
+        cv::exp(*x*slope*-1, temp);
+        *x = 1/(cv::Scalar(1)+temp);
+    }
+    void binSigmoidDerivative(cv::Mat* x, double slope = 0.5)
+    {
+        cv::Mat temp;
+        cv::exp(*x*slope*-1, temp);
+        cv::pow((slope*temp)/(cv::Scalar(1)+temp), 2, *x);
+    }
     
     
     void openSampleFile(wxString fileName);

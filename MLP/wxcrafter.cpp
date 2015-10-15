@@ -23,7 +23,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
         bBitmapLoaded = true;
     }
     
-    wxBoxSizer* boxSizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* boxSizer1 = new wxBoxSizer(wxHORIZONTAL);
     this->SetSizer(boxSizer1);
     
     m_mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);

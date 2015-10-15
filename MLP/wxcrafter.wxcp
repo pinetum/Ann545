@@ -1,7 +1,7 @@
 {
 	"metadata":	{
 		"m_generatedFilesDir":	".",
-		"m_objCounter":	95,
+		"m_objCounter":	103,
 		"m_includeFiles":	[],
 		"m_bitmapFunction":	"wxC9ED9InitBitmapResources",
 		"m_bitmapsFile":	"wxcrafter_bitmaps.cpp",
@@ -150,7 +150,7 @@
 						}, {
 							"type":	"choice",
 							"m_label":	"Orientation:",
-							"m_selection":	0,
+							"m_selection":	1,
 							"m_options":	["wxVERTICAL", "wxHORIZONTAL"]
 						}],
 					"m_events":	[],
