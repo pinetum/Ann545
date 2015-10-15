@@ -79,10 +79,9 @@ wxThread::ExitCode MLP::Entry(){
     cv::randu(m_weight_l2, cv::Scalar(double(0.1)), cv::Scalar(double(0.4)));
     cv::randu(m_weight_l3, cv::Scalar(double(0.1)), cv::Scalar(double(0.4)));
     // momentum weight updating...
-    cv::Mat m_weight_momentum_l1, m_weight_momentum_l2, m_weight_momentum_l3;
-    m_weight_momentum_l1 = cv::Mat::zeros(m_nInputs,       m_nNeuronsL1,   CV_64F);
-    m_weight_momentum_l2 = cv::Mat::zeros(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
-    m_weight_momentum_l3 = cv::Mat::zeros(m_nNeuronsL2,    m_nClasses,     CV_64F);
+    cv::Mat m_weight_momentum_delta_l1 = cv::Mat::zeros(m_nInputs,       m_nNeuronsL1,   CV_64F);
+    cv::Mat m_weight_momentum_delta_l2 = cv::Mat::zeros(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
+    cv::Mat m_weight_momentum_delta_l3 = cv::Mat::zeros(m_nNeuronsL2,    m_nClasses,     CV_64F);
     
     
     writeMat("./inital_W1.txt", &m_weight_l1);
@@ -157,6 +156,37 @@ wxThread::ExitCode MLP::Entry(){
                 transfer(&output_L3, &derivate_L3);
                 
                 
+                
+                
+                //debug--------(saturation)
+                if(!cv::checkRange(derivate_L1))
+                {
+                    wxLogMessage("---Error---");
+                    writeMat(wxString::Format("ErrorL1X%d.txt", i_dataRows), &summation_L2);
+                    writeMat(wxString::Format("ErrorL1Y%d.txt", i_dataRows), &derivate_L2);
+                    break;
+                }
+                if(!cv::checkRange(derivate_L3))
+                {
+                    wxLogMessage("---Error---");
+                    writeMat(wxString::Format("ErrorL3X%d.txt", i_dataRows), &summation_L3);
+                    writeMat(wxString::Format("ErrorL3Y%d.txt", i_dataRows), &derivate_L3);
+                    writeMat("./end_W1.txt", &m_weight_l1);
+                    writeMat("./end_W2.txt", &m_weight_l2);
+                    writeMat("./end_W3.txt", &m_weight_l3);
+                    break;
+                }
+                if(!cv::checkRange(derivate_L2))
+                {
+                    wxLogMessage("---Error---");
+                    writeMat(wxString::Format("ErrorL2X%d.txt", i_dataRows), &summation_L2);
+                    writeMat(wxString::Format("ErrorL2Y%d.txt", i_dataRows), &derivate_L2);
+                    break;
+                }
+                
+                
+                
+                
                 //SE(train)
                 cv::Mat error = output_desired - output_L3 ;
                 cv::Mat errorSquare;
@@ -164,67 +194,47 @@ wxThread::ExitCode MLP::Entry(){
                 // summation square error
                 MSE_training_Fold += errorSquare; 
   
+                
+                
+                
                 // update weight (sequential update)
-                
-            
                 double learnRate = getLearningRate(i_iteration);
-                // update Layer 3 weight
-                //cv::Mat derivate_L3 = summation_L3.clone();
-                //binSigmoidDerivative(&derivate_L3);
-                if(!cv::checkRange(derivate_L3))
-                {
-                    wxLogMessage("---nan---");
-                    writeMat(wxString::Format("NanL3X%d.txt", i_dataRows), &summation_L3);
-                    writeMat(wxString::Format("NanL3Y%d.txt", i_dataRows), &derivate_L3);
-                    writeMat("./end_W1.txt", &m_weight_l1);
-                    writeMat("./end_W2.txt", &m_weight_l2);
-                    writeMat("./end_W3.txt", &m_weight_l3);
-                    break;
-                }
-                
+                    // update Layer 3 weight
                 cv::Mat delta_L3 = error.mul(derivate_L3); 
-                
-                m_weight_l3 += (delta_L3.t()*output_L2).t()*learnRate;
-                
-                
-
-                // update Layer 2 weight 
-                //cv::Mat derivate_L2 = summation_L2.clone();
-                //binSigmoidDerivative(&derivate_L2);
-                if(!cv::checkRange(derivate_L2))
+                if(m_bMomentum)
                 {
-                    wxLogMessage("---nan---");
-                    writeMat(wxString::Format("NanL2X%d.txt", i_dataRows), &summation_L2);
-                    writeMat(wxString::Format("NanL2Y%d.txt", i_dataRows), &derivate_L2);
-                    break;
+                    cv::Mat temp = (delta_L3.t()*output_L2).t();
+                    m_weight_l3 += (m_dMomentumAlpha*m_weight_momentum_delta_l3+temp)*learnRate;
+                    m_weight_momentum_delta_l3 = temp;
                 }
+                else
+                {
+                    m_weight_l3 += (delta_L3.t()*output_L2).t()*learnRate;
+                }
+                    // update Layer 2 weight 
                 cv::Mat delta_L2 = (delta_L3*m_weight_l3.t() ).mul(derivate_L2);
-                m_weight_l2 += (delta_L2.t()*output_L1).t()*learnRate;
-                
-                
-                
-                
-                
-               
-                
-           
-                // update Layer 1 weight
-                //cv::Mat derivate_L1 = summation_L1.clone();
-                //binSigmoidDerivative(&derivate_L1);
-                if(!cv::checkRange(derivate_L1))
+                if(m_bMomentum)
                 {
-                    wxLogMessage("---nan---");
-                    writeMat(wxString::Format("NanL1X%d.txt", i_dataRows), &summation_L2);
-                    writeMat(wxString::Format("NanL1Y%d.txt", i_dataRows), &derivate_L2);
-                    break;
+                    cv::Mat temp = (delta_L2.t()*output_L1).t();
+                    m_weight_l2+= (m_dMomentumAlpha*m_weight_momentum_delta_l2+temp)*learnRate;
+                    m_weight_momentum_delta_l2 = temp;
                 }
+                else
+                {
+                    m_weight_l2 += (delta_L2.t()*output_L1).t()*learnRate;
+                }
+                    // update Layer 1 weight
                 cv::Mat delta_L1 = (delta_L2*m_weight_l2.t()).mul(derivate_L1);
-                m_weight_l1 += (delta_L1.t()*input).t()*learnRate;
-                
-                
-                
-                
-                
+                if(m_bMomentum)
+                {
+                    cv::Mat temp = (delta_L1.t()*input).t();
+                    m_weight_l1 += (m_dMomentumAlpha*m_weight_momentum_delta_l1+temp)*learnRate;
+                    m_weight_momentum_delta_l1 = temp;
+                }
+                else
+                {
+                   m_weight_l1 += (delta_L1.t()*input).t()*learnRate;
+                }
                 // update weight end
                 
             } // training for loop end
