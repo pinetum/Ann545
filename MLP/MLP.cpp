@@ -5,10 +5,11 @@
 
 
 const char str_learnRateAdj[3][30] = {"Search then converge", "Exponential decay", "Binary Sigmoid"};
-const char str_activation[3][30] = {"Binary Sigmoid", "Exponential decay", "bipolar sigmoid"};
+const char str_activation[2][30] = {"Binary Sigmoid", "bipolar sigmoid"};
 
 MLP::MLP(wxEvtHandler* pParent)
 {
+    parlaelPt                   = NULL;
     m_pHandler                  = pParent;
     m_nKfold                    = 10;
     m_nInputs                   = 9;
@@ -61,6 +62,7 @@ wxThread::ExitCode MLP::Entry(){
     wxThreadEvent* evt_update;
     wxThreadEvent* evt_start;
     evt_start = new wxThreadEvent(wxEVT_COMMAND_MLP_START);
+    evt_start->SetPayload(parlaelPt);
     wxQueueEvent(m_pHandler, evt_start);
     if(!m_data_input.data)  // check data is ok...
     {
@@ -82,10 +84,10 @@ wxThread::ExitCode MLP::Entry(){
     cv::Mat m_weight_momentum_delta_l1 = cv::Mat::zeros(m_nInputs,       m_nNeuronsL1,   CV_64F);
     cv::Mat m_weight_momentum_delta_l2 = cv::Mat::zeros(m_nNeuronsL1,    m_nNeuronsL2,   CV_64F);
     cv::Mat m_weight_momentum_delta_l3 = cv::Mat::zeros(m_nNeuronsL2,    m_nClasses,     CV_64F);
-    writeMat("./inital_W1.txt", &m_weight_l1);
-    writeMat("./inital_W2.txt", &m_weight_l2);
-    writeMat("./inital_W3.txt", &m_weight_l3);
-    writeMat("./trainingScaledData.txt", &m_data_scaled2train);
+    writeMat("inital_W1.txt", &m_weight_l1);
+    writeMat("inital_W2.txt", &m_weight_l2);
+    writeMat("inital_W3.txt", &m_weight_l3);
+    writeMat("trainingScaledData.txt", &m_data_scaled2train);
     //MSE
     std::vector<double > vMSE_training;
     std::vector<double > vMSE_validation;
@@ -276,6 +278,7 @@ wxThread::ExitCode MLP::Entry(){
         // update progress bar and timer
         evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE_PG);
         evt_update->SetInt(i_iteration);
+        evt_update->SetPayload(parlaelPt);
         wxQueueEvent(m_pHandler, evt_update);
     }//epoch for loop end
     //------------------------save files---------------------//
@@ -307,14 +310,14 @@ wxThread::ExitCode MLP::Entry(){
 //    writeMat("MSE_validationData.csv", &MSE_validationData);
     
     //save weight result
-    writeMat("./end_W1.txt", &m_weight_l1);
-    writeMat("./end_W2.txt", &m_weight_l2);
-    writeMat("./end_W3.txt", &m_weight_l3);
+    writeMat("end_W1.txt", &m_weight_l1);
+    writeMat("end_W2.txt", &m_weight_l2);
+    writeMat("end_W3.txt", &m_weight_l3);
     //------------------------save files end-----------------//
     // post event2handler4stop
     evt_end = new wxThreadEvent(wxEVT_COMMAND_MLP_COMPLETE);
     evt_end->SetString(wxString::Format("[MLP]Complete. %s",str_result));
-    
+    evt_end->SetPayload(parlaelPt);
     wxQueueEvent(m_pHandler, evt_end);
     return (wxThread::ExitCode)0;
 }
@@ -344,8 +347,8 @@ void MLP::dataScale()
     int n_testDataRows  = m_dRatioTestingDatas*rescaledResult.rows;
     m_data_scaled2test  = rescaledResult.rowRange(0, n_testDataRows).clone();
     m_data_scaled2train = rescaledResult.rowRange(n_testDataRows, rescaledResult.rows).clone();
-    writeMat("./m_data_scaled2test.txt", &m_data_scaled2test);
-    writeMat("./m_data_scaled2test.txt", &m_data_scaled2train);
+    writeMat("m_data_scaled2test.txt", &m_data_scaled2test);
+    writeMat("m_data_scaled2test.txt", &m_data_scaled2train);
 }
 
 double MLP::getAccuracy()

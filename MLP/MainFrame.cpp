@@ -19,6 +19,7 @@ MainFrame::MainFrame(wxWindow* parent)
     m_MLP               = NULL;
     m_bMLPrunning       = false;
     m_nCPUs             = wxThread::GetCPUCount();
+    v_Parallels.clear();
     SetSize(-1, -1);
     Center();
     Bind(wxEVT_COMMAND_MLP_START, &MainFrame::OnMlpStart, this);
@@ -26,7 +27,7 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_COMMAND_MLP_UPDATE_PG, &MainFrame::OnMlpUpdatePg, this);
     Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
     
-    m_staticText_CpuCores->SetLabel(wxString::Format("CPUs:%d", m_nCPUs));
+    m_staticText_CpuCores->SetLabel(wxString::Format("Threads:%d/%d", v_Parallels.size(), m_nCPUs));
     m_textCtrl_IterationTimes->SetLabel("1500");
     m_textCtrl_L1neurons->SetLabel("6");
     m_textCtrl_L2neurons->SetLabel("8");
@@ -59,17 +60,41 @@ void MainFrame::OnMlpUpdate(wxThreadEvent& evt)
 void MainFrame::OnMlpComplete(wxThreadEvent& evt)
 {
     //stopTimer("MLP Stop");
-    m_MLP = NULL;
-    m_bMLPrunning = false;
+    
+    parallelMLPThread* pt = evt.GetPayload<parallelMLPThread*>();
+    if(pt != NULL)
+    {
+        v_Parallels.erase(std::remove(v_Parallels.begin(), v_Parallels.end(), pt), v_Parallels.end());
+        pt->pg->Destroy();
+        m_staticText_CpuCores->SetLabel(wxString::Format("Threads:%d/%d", v_Parallels.size(), m_nCPUs));
+    
+    }
+    else
+    {
+        m_MLP = NULL;
+        m_bMLPrunning = false;
+    }
+    
     showMessage(evt.GetString());
 }
 void MainFrame::OnMlpUpdatePg(wxThreadEvent& evt)
 {
     int iteration = evt.GetInt() + 1 ;
     int total = m_MLP->m_nTotalIteration;
-    m_gaugePg->SetValue(100*iteration/total);
-    m_staticTextPg->SetLabel(wxString::Format("%d/%d", iteration, total));
-    m_staticTextTimer->SetLabel(getTimer());
+    parallelMLPThread* pt = evt.GetPayload<parallelMLPThread*>();
+    if(pt != NULL)
+    {
+        pt->pg->Update(100*iteration/total);
+        pt->pg->SetTitle(getTimer());
+    }
+    else
+    {
+        m_gaugePg->SetValue(100*iteration/total);
+        m_staticTextPg->SetLabel(wxString::Format("%d/%d", iteration, total));
+        m_staticTextTimer->SetLabel(getTimer());
+    }
+    
+    
 }
 
 
@@ -143,12 +168,7 @@ void MainFrame::OnLoadData(wxCommandEvent& event)
         
     
 }
-void MainFrame::OnTrainModel(wxCommandEvent& event)
-{
-    m_MLP = new MLP(this);
-    m_MLP->openSampleFile(pathName);
-    
-    double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration, d_nkFold, d_momentumAlpha;
+void MainFrame::getParameter(){
     m_textCtrl_L1neurons->GetValue().ToDouble(&d_nL1);
     m_textCtrl_L2neurons->GetValue().ToDouble(&d_nL2);
     m_textCtrl_LearnRateInital->GetValue().ToDouble(&d_rateIntial);
@@ -157,6 +177,14 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
     m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
     m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
     m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
+}
+void MainFrame::OnTrainModel(wxCommandEvent& event)
+{
+    m_MLP = new MLP(this);
+    m_MLP->parlaelPt = NULL;
+    m_MLP->openSampleFile(pathName);
+    
+    getParameter();
     m_MLP->SetParameter((int)d_nL1, 
                         (int)d_nL2, 
                         d_rateIntial, 
@@ -168,10 +196,49 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
                         (int)d_nkFold,
                         m_choice_LearnAdjust->GetSelection(),
                         m_choice_TransferFunc->GetSelection());
+    
     m_MLP->Run();
         
 }
-
+void MainFrame::OnTrainModelParallel(wxCommandEvent& event)
+{
+    getParameter();
+    parallelMLPThread* pt = new parallelMLPThread();
+    pt->mlp = new MLP(this);
+    pt->mlp->openSampleFile(pathName);
+    pt->mlp->SetParameter((int)d_nL1, 
+                        (int)d_nL2, 
+                        d_rateIntial, 
+                        d_rateMin, 
+                        d_rateShift, 
+                        d_iteration, 
+                        m_checkBox_Momentum->GetValue(),
+                        d_momentumAlpha,
+                        (int)d_nkFold,
+                        m_choice_LearnAdjust->GetSelection(),
+                        m_choice_TransferFunc->GetSelection());
+    pt->mlp->parlaelPt = pt;
+    pt->mlp->Run();
+    pt->pg = new wxProgressDialog(wxString::Format("%d", v_Parallels.size()+1), 
+                                    wxString::Format("Nurons L1:%d\nNurons L2:%d\nInitRate:%f\nMinRate:%f\nshiftRate:%f\nIteration time:%d\nMomentum:%d\nMomentum Alpha:%f\nk-Fold:%d\nLearn Adjust:%d\nTransFunc:%d",
+                                                    (int)d_nL1, 
+                                                    (int)d_nL2, 
+                                                    d_rateIntial, 
+                                                    d_rateMin, 
+                                                    d_rateShift, 
+                                                    (int)d_iteration, 
+                                                    m_checkBox_Momentum->GetValue(),
+                                                    d_momentumAlpha,
+                                                    (int)d_nkFold,
+                                                    m_choice_LearnAdjust->GetSelection(),
+                                                    m_choice_TransferFunc->GetSelection())
+                                                    );
+    
+    v_Parallels.push_back(pt);
+    m_staticText_CpuCores->SetLabel(wxString::Format("Threads:%d/%d", v_Parallels.size(), m_nCPUs));
+    
+    
+}
 void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 {
     
@@ -184,3 +251,4 @@ void MainFrame::OnUpdateParameterUI(wxUpdateUIEvent& event)
     
     event.Enable(!m_bMLPrunning);
 }
+

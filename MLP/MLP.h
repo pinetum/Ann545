@@ -9,6 +9,7 @@
 #include <libiomp/omp.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
+#include <wx/progdlg.h>
 
 #define MLP_ACTIVATION_BINARY       0
 #define MLP_ACTIVATION_BIPOLOR      1
@@ -33,6 +34,10 @@ class MLP : public wxThread
 public:
     MLP(wxEvtHandler* pParent);
     ~MLP();
+    
+    void* parlaelPt;
+    
+    
     
     cv::Mat     m_data_input;               // data input
     cv::Mat     m_data_scaled2train;        // scaled input training data
@@ -239,5 +244,13 @@ private:
 
     
 
+};
+
+class parallelMLPThread{
+public:
+    parallelMLPThread(){}
+    ~parallelMLPThread(){}
+    MLP* mlp;
+    wxProgressDialog* pg;
 };
 #endif // MLP_H

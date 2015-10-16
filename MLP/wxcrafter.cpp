@@ -28,7 +28,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
     
-    boxSizer1->Add(m_mainPanel, 0, wxEXPAND, 5);
+    boxSizer1->Add(m_mainPanel, 1, wxEXPAND, 5);
     
     wxBoxSizer* boxSizer11 = new wxBoxSizer(wxVERTICAL);
     m_mainPanel->SetSizer(boxSizer11);
@@ -49,6 +49,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_buttonTrain = new wxButton(m_mainPanel, wxID_ANY, _("Train model"), wxDefaultPosition, wxSize(-1,-1), 0);
     
     boxSizer37->Add(m_buttonTrain, 0, wxALL, 5);
+    
+    m_button127 = new wxButton(m_mainPanel, wxID_ANY, _("Train model (parallel)"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    boxSizer37->Add(m_button127, 0, wxALL, 5);
     
     m_staticText_CpuCores = new wxStaticText(m_mainPanel, wxID_ANY, _("Static Text Label"), wxDefaultPosition, wxSize(-1,-1), 0);
     
@@ -186,9 +190,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer117->Add(m_choice_TransferFunc, 0, wxALL, 5);
     
-    m_richTextCtrl = new wxRichTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
+    m_richTextCtrl = new wxRichTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,200), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
     
-    boxSizer11->Add(m_richTextCtrl, 1, wxALL|wxEXPAND, 5);
+    boxSizer11->Add(m_richTextCtrl, 0, wxALL|wxEXPAND, 5);
     
     wxBoxSizer* boxSizer45 = new wxBoxSizer(wxHORIZONTAL);
     
@@ -206,24 +210,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_staticTextTimer = new wxStaticText(m_mainPanel, wxID_ANY, _("00:00:00:000"), wxDefaultPosition, wxSize(-1,-1), 0);
     
     boxSizer45->Add(m_staticTextTimer, 0, wxALL, 5);
-    
-    m_panel121 = new wxPanel(m_mainPanel, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    
-    boxSizer11->Add(m_panel121, 0, wxALL, 5);
-    
-    wxBoxSizer* boxSizer123 = new wxBoxSizer(wxVERTICAL);
-    m_panel121->SetSizer(boxSizer123);
-    
-    m_grid125 = new wxGrid(m_panel121, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxWANTS_CHARS);
-    m_grid125->CreateGrid(0, 0);
-    m_grid125->SetRowLabelAlignment(wxALIGN_RIGHT, wxALIGN_CENTRE);
-    m_grid125->SetColLabelAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-    #if wxVERSION_NUMBER >= 2904
-    m_grid125->UseNativeColHeader(true);
-    #endif
-    m_grid125->EnableEditing(true);
-    
-    boxSizer123->Add(m_grid125, 0, wxALL, 5);
     
     m_menuBar = new wxMenuBar(0);
     this->SetMenuBar(m_menuBar);
@@ -253,17 +239,12 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     } else {
         CentreOnScreen(wxBOTH);
     }
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
     // Connect events
     m_buttonLoadData->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnLoadData), NULL, this);
     m_buttonTrain->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModel), NULL, this);
     m_buttonTrain->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
+    m_button127->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModelParallel), NULL, this);
+    m_button127->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
     m_textCtrl_L1neurons->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_L2neurons->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateInital->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
@@ -283,6 +264,8 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_buttonLoadData->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnLoadData), NULL, this);
     m_buttonTrain->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModel), NULL, this);
     m_buttonTrain->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
+    m_button127->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModelParallel), NULL, this);
+    m_button127->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
     m_textCtrl_L1neurons->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_L2neurons->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateInital->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
