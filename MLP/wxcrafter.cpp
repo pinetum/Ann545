@@ -50,14 +50,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer37->Add(m_buttonTrain, 0, wxALL, 5);
     
-    m_button127 = new wxButton(m_mainPanel, wxID_ANY, _("Train model (parallel)"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    boxSizer37->Add(m_button127, 0, wxALL, 5);
-    
-    m_staticText_CpuCores = new wxStaticText(m_mainPanel, wxID_ANY, _("Static Text Label"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    boxSizer37->Add(m_staticText_CpuCores, 0, wxALL, 5);
-    
     m_staticText = new wxStaticText(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
     
     boxSizer37->Add(m_staticText, 0, wxALL, 5);
@@ -243,8 +235,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_buttonLoadData->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnLoadData), NULL, this);
     m_buttonTrain->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModel), NULL, this);
     m_buttonTrain->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
-    m_button127->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModelParallel), NULL, this);
-    m_button127->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
     m_textCtrl_L1neurons->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_L2neurons->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateInital->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
@@ -264,8 +254,6 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_buttonLoadData->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnLoadData), NULL, this);
     m_buttonTrain->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModel), NULL, this);
     m_buttonTrain->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
-    m_button127->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnTrainModelParallel), NULL, this);
-    m_button127->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateUI), NULL, this);
     m_textCtrl_L1neurons->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_L2neurons->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateInital->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);

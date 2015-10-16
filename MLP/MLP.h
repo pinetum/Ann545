@@ -34,11 +34,6 @@ class MLP : public wxThread
 public:
     MLP(wxEvtHandler* pParent);
     ~MLP();
-    
-    void* parlaelPt;
-    
-    
-    
     cv::Mat     m_data_input;               // data input
     cv::Mat     m_data_scaled2train;        // scaled input training data
     cv::Mat     m_data_scaled2test;          // scaled input testing data
@@ -244,13 +239,5 @@ private:
 
     
 
-};
-
-class parallelMLPThread{
-public:
-    parallelMLPThread(){}
-    ~parallelMLPThread(){}
-    MLP* mlp;
-    wxProgressDialog* pg;
 };
 #endif // MLP_H

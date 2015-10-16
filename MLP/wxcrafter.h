@@ -38,8 +38,6 @@ protected:
     wxPanel* m_mainPanel;
     wxButton* m_buttonLoadData;
     wxButton* m_buttonTrain;
-    wxButton* m_button127;
-    wxStaticText* m_staticText_CpuCores;
     wxStaticText* m_staticText;
     wxStaticText* m_staticText51;
     wxTextCtrl* m_textCtrl_L1neurons;
@@ -76,7 +74,6 @@ protected:
     virtual void OnLoadData(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTrainModel(wxCommandEvent& event) { event.Skip(); }
     virtual void OnUpdateUI(wxUpdateUIEvent& event) { event.Skip(); }
-    virtual void OnTrainModelParallel(wxCommandEvent& event) { event.Skip(); }
     virtual void OnUpdateParameterUI(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
@@ -84,8 +81,6 @@ protected:
 public:
     wxButton* GetButtonLoadData() { return m_buttonLoadData; }
     wxButton* GetButtonTrain() { return m_buttonTrain; }
-    wxButton* GetButton127() { return m_button127; }
-    wxStaticText* GetStaticText_CpuCores() { return m_staticText_CpuCores; }
     wxStaticText* GetStaticText() { return m_staticText; }
     wxStaticText* GetStaticText51() { return m_staticText51; }
     wxTextCtrl* GetTextCtrl_L1neurons() { return m_textCtrl_L1neurons; }

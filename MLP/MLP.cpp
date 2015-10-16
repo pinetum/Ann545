@@ -9,7 +9,6 @@ const char str_activation[2][30] = {"Binary Sigmoid", "bipolar sigmoid"};
 
 MLP::MLP(wxEvtHandler* pParent)
 {
-    parlaelPt                   = NULL;
     m_pHandler                  = pParent;
     m_nKfold                    = 10;
     m_nInputs                   = 9;
@@ -62,7 +61,6 @@ wxThread::ExitCode MLP::Entry(){
     wxThreadEvent* evt_update;
     wxThreadEvent* evt_start;
     evt_start = new wxThreadEvent(wxEVT_COMMAND_MLP_START);
-    evt_start->SetPayload(parlaelPt);
     wxQueueEvent(m_pHandler, evt_start);
     if(!m_data_input.data)  // check data is ok...
     {
@@ -278,7 +276,6 @@ wxThread::ExitCode MLP::Entry(){
         // update progress bar and timer
         evt_update = new wxThreadEvent(wxEVT_COMMAND_MLP_UPDATE_PG);
         evt_update->SetInt(i_iteration);
-        evt_update->SetPayload(parlaelPt);
         wxQueueEvent(m_pHandler, evt_update);
     }//epoch for loop end
     //------------------------save files---------------------//
@@ -317,7 +314,6 @@ wxThread::ExitCode MLP::Entry(){
     // post event2handler4stop
     evt_end = new wxThreadEvent(wxEVT_COMMAND_MLP_COMPLETE);
     evt_end->SetString(wxString::Format("[MLP]Complete. %s",str_result));
-    evt_end->SetPayload(parlaelPt);
     wxQueueEvent(m_pHandler, evt_end);
     return (wxThread::ExitCode)0;
 }
@@ -348,7 +344,7 @@ void MLP::dataScale()
     m_data_scaled2test  = rescaledResult.rowRange(0, n_testDataRows).clone();
     m_data_scaled2train = rescaledResult.rowRange(n_testDataRows, rescaledResult.rows).clone();
     writeMat("m_data_scaled2test.txt", &m_data_scaled2test);
-    writeMat("m_data_scaled2test.txt", &m_data_scaled2train);
+    writeMat("m_data_scaled2train.txt", &m_data_scaled2train);
 }
 
 double MLP::getAccuracy()
