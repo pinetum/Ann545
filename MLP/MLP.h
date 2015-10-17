@@ -6,7 +6,7 @@
 #include <wx/event.h> 
 #include <wx/log.h>
 #include <vector>
-#include <libiomp/omp.h>
+#include <omp.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
 #include <wx/progdlg.h>
@@ -217,6 +217,9 @@ private:
     {
         wxTextFile  tfile;
         tfile.Create(outputName);
+        
+        if(info != "")
+            tfile.AddLine(info);
         for(int j = 0; j < data->rows; j++)
         {
             wxString str_line = "";
@@ -229,8 +232,7 @@ private:
             tfile.AddLine(str_line);
         }
         
-        tfile.AddLine("");
-        tfile.AddLine(info);
+        
         
         
         tfile.Write();
