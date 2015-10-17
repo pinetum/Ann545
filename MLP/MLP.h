@@ -60,7 +60,7 @@ public:
     
     int         m_nTerminalThreshold;       //
     
-    bool        m_bMomentum;                // update weight with momentum ?
+    bool        m_bRescale;
     double      m_dMomentumAlpha;           // momentum Alpha
     double      m_dDesiredOutput_rescale;
     double      m_dInitalLearningRate;      // inital learning rate
@@ -68,15 +68,16 @@ public:
 
     double      m_dRatioTestingDatas;       // ratio of datas use in Testing phase
     
-    void SetParameter(  int n_nuronL1, 
+    void SetParameter(  bool b_dataRescale,
+                        int n_nuronL1, 
                         int n_nuronL2, 
                         double d_InitalLearningRate, 
                         double d_MinLearningRate,
                         int n_LearningRateShift,
                         int n_TotalIteration,
-                        bool b_Momentum,
                         double d_MomentumAlpha,
                         int n_kFold,
+                        double d_testDataRatio,
                         int LearnRateAdjMethod,
                         int ActivationType);
     

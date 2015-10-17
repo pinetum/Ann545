@@ -22,7 +22,7 @@ public:
     bool m_bMLPrunning;
     MLP* m_MLP;
     wxString pathName;
-    double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration, d_nkFold, d_momentumAlpha;
+    double d_nL1, d_nL2, d_rateIntial, d_rateMin, d_rateShift, d_iteration, d_nkFold, d_momentumAlpha, d_testDataRatio;
     void getParameter();
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);

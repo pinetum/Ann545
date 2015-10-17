@@ -86,9 +86,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_L2neurons, 0, wxALL, 5);
     
-    m_staticText57 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate 𝝁0"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticText_LearnRateInital = new wxStaticText(m_mainPanel, wxID_ANY, _("Inital learning rate"), wxDefaultPosition, wxSize(-1,-1), 0);
     
-    flexGridSizer49->Add(m_staticText57, 0, wxALL, 5);
+    flexGridSizer49->Add(m_staticText_LearnRateInital, 0, wxALL, 5);
     
     m_textCtrl_LearnRateInital = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
     #if wxVERSION_NUMBER >= 3000
@@ -119,9 +119,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_KFold, 0, wxALL, 5);
     
-    m_staticText73 = new wxStaticText(m_mainPanel, wxID_ANY, _("Learning Rate 𝝁min"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticText_LearnRateMin = new wxStaticText(m_mainPanel, wxID_ANY, _("Minimum learning Rate"), wxDefaultPosition, wxSize(-1,-1), 0);
     
-    flexGridSizer49->Add(m_staticText73, 0, wxALL, 5);
+    flexGridSizer49->Add(m_staticText_LearnRateMin, 0, wxALL, 5);
     
     m_textCtrl_LearnRateMin = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
     #if wxVERSION_NUMBER >= 3000
@@ -141,10 +141,20 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_IterationTimes, 0, wxALL, 5);
     
-    m_checkBox_Momentum = new wxCheckBox(m_mainPanel, wxID_ANY, _("Momentum 𝛼"), wxDefaultPosition, wxSize(-1,-1), 0);
-    m_checkBox_Momentum->SetValue(false);
+    m_staticText129 = new wxStaticText(m_mainPanel, wxID_ANY, _("Testing Data Ratio"), wxDefaultPosition, wxSize(-1,-1), 0);
     
-    flexGridSizer49->Add(m_checkBox_Momentum, 0, wxALL, 5);
+    flexGridSizer49->Add(m_staticText129, 0, wxALL, 5);
+    
+    m_textCtrl_TestDataRatio = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl_TestDataRatio->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer49->Add(m_textCtrl_TestDataRatio, 0, wxALL, 5);
+    
+    m_staticText139 = new wxStaticText(m_mainPanel, wxID_ANY, _("Momentum \nForgetting factor"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer49->Add(m_staticText139, 0, wxALL, 5);
     
     m_textCtrl_MomentumAlpha = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
     #if wxVERSION_NUMBER >= 3000
@@ -152,6 +162,11 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     flexGridSizer49->Add(m_textCtrl_MomentumAlpha, 0, wxALL, 5);
+    
+    m_checkBox_DataRescale = new wxCheckBox(m_mainPanel, wxID_ANY, _("Rescale"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_checkBox_DataRescale->SetValue(true);
+    
+    flexGridSizer49->Add(m_checkBox_DataRescale, 0, wxALL, 5);
     
     wxFlexGridSizer* flexGridSizer117 = new wxFlexGridSizer(0, 2, 0, 0);
     flexGridSizer117->SetFlexibleDirection( wxBOTH );
@@ -242,7 +257,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_textCtrl_KFold->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateMin->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_IterationTimes->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
-    m_checkBox_Momentum->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_MomentumAlpha->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     this->Connect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
@@ -261,7 +275,6 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_textCtrl_KFold->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_LearnRateMin->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_IterationTimes->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
-    m_checkBox_Momentum->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_MomentumAlpha->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     this->Disconnect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);

@@ -43,18 +43,21 @@ protected:
     wxTextCtrl* m_textCtrl_L1neurons;
     wxStaticText* m_staticText69;
     wxTextCtrl* m_textCtrl_L2neurons;
-    wxStaticText* m_staticText57;
+    wxStaticText* m_staticText_LearnRateInital;
     wxTextCtrl* m_textCtrl_LearnRateInital;
     wxStaticText* m_staticText61;
     wxTextCtrl* m_textCtrl_LearnRateShift;
     wxStaticText* m_staticText91;
     wxTextCtrl* m_textCtrl_KFold;
-    wxStaticText* m_staticText73;
+    wxStaticText* m_staticText_LearnRateMin;
     wxTextCtrl* m_textCtrl_LearnRateMin;
     wxStaticText* m_staticText77;
     wxTextCtrl* m_textCtrl_IterationTimes;
-    wxCheckBox* m_checkBox_Momentum;
+    wxStaticText* m_staticText129;
+    wxTextCtrl* m_textCtrl_TestDataRatio;
+    wxStaticText* m_staticText139;
     wxTextCtrl* m_textCtrl_MomentumAlpha;
+    wxCheckBox* m_checkBox_DataRescale;
     wxStaticText* m_staticText111;
     wxChoice* m_choice_LearnAdjust;
     wxStaticText* m_staticText107;
@@ -86,18 +89,21 @@ public:
     wxTextCtrl* GetTextCtrl_L1neurons() { return m_textCtrl_L1neurons; }
     wxStaticText* GetStaticText69() { return m_staticText69; }
     wxTextCtrl* GetTextCtrl_L2neurons() { return m_textCtrl_L2neurons; }
-    wxStaticText* GetStaticText57() { return m_staticText57; }
+    wxStaticText* GetStaticText_LearnRateInital() { return m_staticText_LearnRateInital; }
     wxTextCtrl* GetTextCtrl_LearnRateInital() { return m_textCtrl_LearnRateInital; }
     wxStaticText* GetStaticText61() { return m_staticText61; }
     wxTextCtrl* GetTextCtrl_LearnRateShift() { return m_textCtrl_LearnRateShift; }
     wxStaticText* GetStaticText91() { return m_staticText91; }
     wxTextCtrl* GetTextCtrl_KFold() { return m_textCtrl_KFold; }
-    wxStaticText* GetStaticText73() { return m_staticText73; }
+    wxStaticText* GetStaticText_LearnRateMin() { return m_staticText_LearnRateMin; }
     wxTextCtrl* GetTextCtrl_LearnRateMin() { return m_textCtrl_LearnRateMin; }
     wxStaticText* GetStaticText77() { return m_staticText77; }
     wxTextCtrl* GetTextCtrl_IterationTimes() { return m_textCtrl_IterationTimes; }
-    wxCheckBox* GetCheckBox_Momentum() { return m_checkBox_Momentum; }
+    wxStaticText* GetStaticText129() { return m_staticText129; }
+    wxTextCtrl* GetTextCtrl_TestDataRatio() { return m_textCtrl_TestDataRatio; }
+    wxStaticText* GetStaticText139() { return m_staticText139; }
     wxTextCtrl* GetTextCtrl_MomentumAlpha() { return m_textCtrl_MomentumAlpha; }
+    wxCheckBox* GetCheckBox_DataRescale() { return m_checkBox_DataRescale; }
     wxStaticText* GetStaticText111() { return m_staticText111; }
     wxChoice* GetChoice_LearnAdjust() { return m_choice_LearnAdjust; }
     wxStaticText* GetStaticText107() { return m_staticText107; }

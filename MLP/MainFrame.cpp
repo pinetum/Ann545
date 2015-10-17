@@ -25,6 +25,8 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_COMMAND_MLP_UPDATE_PG, &MainFrame::OnMlpUpdatePg, this);
     Bind(wxEVT_COMMAND_MLP_COMPLETE, &MainFrame::OnMlpComplete, this);
     
+    
+    
     m_textCtrl_IterationTimes->SetLabel("1500");
     m_textCtrl_L1neurons->SetLabel("6");
     m_textCtrl_L2neurons->SetLabel("8");
@@ -33,8 +35,10 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_LearnRateShift->SetLabel("500");
     m_textCtrl_KFold->SetLabel("10");
     m_textCtrl_MomentumAlpha->SetLabel("0.4");
-    
+    m_textCtrl_TestDataRatio->SetLabel("0.5");
     pathName = "";
+    m_choice_LearnAdjust->Select(0);
+    m_choice_TransferFunc->Select(0);
     
     
 }
@@ -157,6 +161,7 @@ void MainFrame::getParameter(){
     m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
     m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
     m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
+    m_textCtrl_TestDataRatio->GetValue().ToDouble(&d_testDataRatio);
 }
 void MainFrame::OnTrainModel(wxCommandEvent& event)
 {
@@ -164,15 +169,16 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
     m_MLP->openSampleFile(pathName);
     
     getParameter();
-    m_MLP->SetParameter((int)d_nL1, 
+    m_MLP->SetParameter(m_checkBox_DataRescale->GetValue(),
+                        (int)d_nL1, 
                         (int)d_nL2, 
                         d_rateIntial, 
                         d_rateMin, 
                         d_rateShift, 
                         d_iteration, 
-                        m_checkBox_Momentum->GetValue(),
                         d_momentumAlpha,
                         (int)d_nkFold,
+                        d_testDataRatio,
                         m_choice_LearnAdjust->GetSelection(),
                         m_choice_TransferFunc->GetSelection());
     

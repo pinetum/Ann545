@@ -15,7 +15,6 @@ MLP::MLP(wxEvtHandler* pParent)
     m_nClasses                  = 2;
     m_nNeuronsL1                = 5;
     m_nNeuronsL2                = 5;
-    m_bMomentum                 = false;
     m_nTotalIteration           = 3000;
     m_ActivationType            = MLP_ACTIVATION_BINARY;
     m_dMinLearningRate          = 0.05;
@@ -24,24 +23,26 @@ MLP::MLP(wxEvtHandler* pParent)
     m_dRatioTestingDatas        = 0.2;
     m_dInitalLearningRate       = 0.3;
     m_dDesiredOutput_rescale    = 0.15;
-    m_nTerminalThreshold        = m_nTotalIteration*0.1;
+    m_nTerminalThreshold        = m_nTotalIteration*0.08;
 }
-void MLP::SetParameter(  int n_nuronL1, 
-                    int n_nuronL2, 
-                    double d_InitalLearningRate, 
-                    double d_MinLearningRate,
-                    int n_LearningRateShift,
-                    int n_TotalIteration,
-                    bool b_Momentum,
-                    double d_MomentumAlpha,
-                    int n_kFold,
-                    int LearnRateAdjMethod,
-                    int ActivationType)
+void MLP::SetParameter(bool b_dataRescale,
+                        int n_nuronL1, 
+                        int n_nuronL2, 
+                        double d_InitalLearningRate, 
+                        double d_MinLearningRate,
+                        int n_LearningRateShift,
+                        int n_TotalIteration,
+                        double d_MomentumAlpha,
+                        int n_kFold,
+                        double d_testDataRatio,
+                        int LearnRateAdjMethod,
+                        int ActivationType)
 {
     m_nKfold                = n_kFold;
-    m_bMomentum             = b_Momentum;
     m_nNeuronsL1            = n_nuronL1;
     m_nNeuronsL2            = n_nuronL2;
+    m_bRescale              = b_dataRescale;
+    m_dRatioTestingDatas    = d_testDataRatio;
     m_dMomentumAlpha        = d_MomentumAlpha;
     m_ActivationType        = ActivationType;
     m_nTotalIteration       = n_TotalIteration;
@@ -94,17 +95,25 @@ wxThread::ExitCode MLP::Entry(){
     //epoch for loop
     for(int i_iteration = 0; i_iteration < m_nTotalIteration; i_iteration++)
     {
-        double dMSE_training_epoch    = 0;
-        double dMSE_validation_epoch  = 0;
-        int n_preFoldItems = m_data_scaled2train.rows/m_nKfold;
-        
-        
         // shuffel
         shuffelRow(&m_data_scaled2train);
         
         
+        double dMSE_training_epoch    = 0;
+        double dMSE_validation_epoch  = 0;
+        
+        int n_preFoldItems = m_data_scaled2train.rows/m_nKfold;
+        int n_loopFoldTimes = m_nKfold;
+        // leave one out 
+        if(m_nKfold == -1)
+        {
+            int n_preFoldItems = 1;
+            int n_loopFoldTimes = m_data_scaled2train.rows;
+        }
+        
+            
         // kfold for loop
-        for(int i_kFold = 0; i_kFold < m_nKfold; i_kFold++)
+        for(int i_kFold = 0; i_kFold < n_loopFoldTimes; i_kFold++)
         {
             cv::Mat MSE_training_Fold = cv::Mat::zeros(1, m_nClasses, CV_64FC1);
             cv::Mat MSE_valudation_Fold = cv::Mat::zeros(1, m_nClasses, CV_64FC1);
@@ -175,11 +184,11 @@ wxThread::ExitCode MLP::Entry(){
                 double learnRate = getLearningRate(i_iteration);
                     // update Layer 3 weight
                 cv::Mat delta_L3 = error.mul(derivate_L3); 
-                if(m_bMomentum)
+                if(m_dMomentumAlpha > 0)
                 {
-                    cv::Mat temp = (delta_L3.t()*output_L2).t();
-                    m_weight_l3 += (m_dMomentumAlpha*m_weight_momentum_delta_l3+temp)*learnRate;
-                    m_weight_momentum_delta_l3 = temp;
+                    cv::Mat nextMomentum = (delta_L3.t()*output_L2).t();
+                    m_weight_l3 += (m_dMomentumAlpha*m_weight_momentum_delta_l3+nextMomentum)*learnRate;
+                    m_weight_momentum_delta_l3 = nextMomentum;
                 }
                 else
                 {
@@ -187,11 +196,11 @@ wxThread::ExitCode MLP::Entry(){
                 }
                     // update Layer 2 weight 
                 cv::Mat delta_L2 = (delta_L3*m_weight_l3.t() ).mul(derivate_L2);
-                if(m_bMomentum)
+                if(m_dMomentumAlpha > 0)
                 {
-                    cv::Mat temp = (delta_L2.t()*output_L1).t();
-                    m_weight_l2+= (m_dMomentumAlpha*m_weight_momentum_delta_l2+temp)*learnRate;
-                    m_weight_momentum_delta_l2 = temp;
+                    cv::Mat nextMomentum = (delta_L2.t()*output_L1).t();
+                    m_weight_l2+= (m_dMomentumAlpha*m_weight_momentum_delta_l2+nextMomentum)*learnRate;
+                    m_weight_momentum_delta_l2 = nextMomentum;
                 }
                 else
                 {
@@ -199,11 +208,11 @@ wxThread::ExitCode MLP::Entry(){
                 }
                     // update Layer 1 weight
                 cv::Mat delta_L1 = (delta_L2*m_weight_l2.t()).mul(derivate_L1);
-                if(m_bMomentum)
+                if(m_dMomentumAlpha > 0)
                 {
-                    cv::Mat temp = (delta_L1.t()*input).t();
-                    m_weight_l1 += (m_dMomentumAlpha*m_weight_momentum_delta_l1+temp)*learnRate;
-                    m_weight_momentum_delta_l1 = temp;
+                    cv::Mat nextMomentum = (delta_L1.t()*input).t();
+                    m_weight_l1 += (m_dMomentumAlpha*m_weight_momentum_delta_l1+nextMomentum)*learnRate;
+                    m_weight_momentum_delta_l1 = nextMomentum;
                 }
                 else
                 {
@@ -280,8 +289,9 @@ wxThread::ExitCode MLP::Entry(){
     }//epoch for loop end
     //------------------------save files---------------------//
     wxString str_result, str_resultFileName;
-    str_result.Printf("Accuracy,%f,%d,%d,%d,%d,%d,%f,%f,%d,%d,%f,%s,%s", 
+    str_result.Printf("Accuracy,%f,%f,%d,%d,%d,%d,%d,%f,%f,%d,%f,%s,%s", 
                                         getAccuracy(),
+                                        m_dRatioTestingDatas,
                                         m_nNeuronsL1, 
                                         m_nNeuronsL2,
                                         early_terminateCounter,
@@ -290,7 +300,6 @@ wxThread::ExitCode MLP::Entry(){
                                         m_dInitalLearningRate,
                                         m_dMinLearningRate,
                                         m_nLearningRateShift,
-                                        m_bMomentum,
                                         m_dMomentumAlpha,
                                         str_learnRateAdj[m_LearnRateAdjMethod],
                                         str_activation[m_ActivationType]);
