@@ -191,7 +191,7 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
 void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 {
     
-    event.Enable(!pathName.empty());
+    event.Enable(!m_bMLPrunning);
 
         
 }
