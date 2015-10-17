@@ -35,6 +35,7 @@ void MLP::SetParameter(bool b_dataRescale,
                         double d_MomentumAlpha,
                         int n_kFold,
                         double d_testDataRatio,
+                        double d_Terminalratio,
                         int LearnRateAdjMethod,
                         int ActivationType)
 {
@@ -50,7 +51,7 @@ void MLP::SetParameter(bool b_dataRescale,
     m_LearnRateAdjMethod    = LearnRateAdjMethod;
     m_nLearningRateShift    = n_LearningRateShift;
     m_dInitalLearningRate   = d_InitalLearningRate;
-    
+    m_dTerminalratio        = d_Terminalratio;
     
 }
 MLP::~MLP()

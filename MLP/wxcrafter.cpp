@@ -163,6 +163,17 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_MomentumAlpha, 0, wxALL, 5);
     
+    m_staticText141 = new wxStaticText(m_mainPanel, wxID_ANY, _("Terminal Ratio"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer49->Add(m_staticText141, 0, wxALL, 5);
+    
+    m_textCtrl_TerminalRatio = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrl_TerminalRatio->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer49->Add(m_textCtrl_TerminalRatio, 0, wxALL, 5);
+    
     m_checkBox_DataRescale = new wxCheckBox(m_mainPanel, wxID_ANY, _("Rescale"), wxDefaultPosition, wxSize(-1,-1), 0);
     m_checkBox_DataRescale->SetValue(true);
     

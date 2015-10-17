@@ -65,7 +65,7 @@ public:
     double      m_dDesiredOutput_rescale;
     double      m_dInitalLearningRate;      // inital learning rate
     double      m_dMinLearningRate;         // minimum learning rate (with )
-
+    double      m_dTerminalratio;
     double      m_dRatioTestingDatas;       // ratio of datas use in Testing phase
     
     void SetParameter(  bool b_dataRescale,
@@ -78,6 +78,7 @@ public:
                         double d_MomentumAlpha,
                         int n_kFold,
                         double d_testDataRatio,
+                        double d_Terminalratio,
                         int LearnRateAdjMethod,
                         int ActivationType);
     

@@ -36,6 +36,7 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_KFold->SetLabel("10");
     m_textCtrl_MomentumAlpha->SetLabel("0.4");
     m_textCtrl_TestDataRatio->SetLabel("0.5");
+    m_textCtrl_TerminalRatio->SetLabel("0.1");
     pathName = "";
     m_choice_LearnAdjust->Select(0);
     m_choice_TransferFunc->Select(0);
@@ -162,6 +163,7 @@ void MainFrame::getParameter(){
     m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
     m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
     m_textCtrl_TestDataRatio->GetValue().ToDouble(&d_testDataRatio);
+    m_textCtrl_TerminalRatio->GetValue().ToDouble(&d_terminalRatio);
 }
 void MainFrame::OnTrainModel(wxCommandEvent& event)
 {
@@ -179,6 +181,7 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
                         d_momentumAlpha,
                         (int)d_nkFold,
                         d_testDataRatio,
+                        d_terminalRatio,
                         m_choice_LearnAdjust->GetSelection(),
                         m_choice_TransferFunc->GetSelection());
     
