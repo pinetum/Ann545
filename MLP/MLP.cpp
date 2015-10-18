@@ -106,7 +106,7 @@ wxThread::ExitCode MLP::Entry(){
         int n_preFoldItems = m_data_scaled2train.rows/m_nKfold;
         int n_loopFoldTimes = m_nKfold;
         // leave one out 
-        if(m_nKfold == -1)
+        if(m_nKfold < 1)
         {
             int n_preFoldItems = 1;
             int n_loopFoldTimes = m_data_scaled2train.rows;
@@ -122,13 +122,12 @@ wxThread::ExitCode MLP::Entry(){
             // 切割Fold:index of validation
             int i_strt  = n_preFoldItems*i_kFold;
             int i_end   = i_strt + n_preFoldItems;
-            if(i_kFold == m_nKfold -1)
+            if(i_kFold == n_loopFoldTimes -1)
             {
                 i_end = m_data_scaled2train.rows;
             }
             cv::Mat validateData = m_data_scaled2train.rowRange(i_strt, i_end);
             
-            bool history = true;
             
             // training for loop
             
@@ -180,7 +179,7 @@ wxThread::ExitCode MLP::Entry(){
                 cv::Mat errorSquare;
                 cv::pow(error.clone(), 2, errorSquare);
                 // summation square error
-                MSE_training_Fold += errorSquare;
+                MSE_training_Fold += errorSquare/errorSquare.rows;
                 // update weight (sequential update)
                 double learnRate = getLearningRate(i_iteration);
                     // update Layer 3 weight
@@ -239,46 +238,46 @@ wxThread::ExitCode MLP::Entry(){
                 //SE(train)
                 cv::Mat error = output_desired - response_L3 ;
                 cv::pow(error, 2, error);
-                MSE_valudation_Fold += error;
+                MSE_valudation_Fold += error/error.rows;
             }// validation for loop end
             
             
-            // "mean" square error
+            // root "mean" square error
             dMSE_training_epoch += sqrt(cv::sum(MSE_training_Fold)[0]/(m_data_scaled2train.rows-i_end+i_strt));
             dMSE_validation_epoch += sqrt(cv::sum(MSE_valudation_Fold)[0]/(i_end-i_strt));            
         }// kfold for loop end
         
         //mean k-fold MSE(epoch)
-        vMSE_training.push_back(dMSE_training_epoch/(double)m_nKfold);
-        vMSE_validation.push_back(dMSE_validation_epoch/(double)m_nKfold);
+        vMSE_training.push_back(dMSE_training_epoch/(double)n_loopFoldTimes);
+        vMSE_validation.push_back(dMSE_validation_epoch/(double)n_loopFoldTimes);
         
         // check can terminate?
-        if(i_iteration > 0)                 // check epoch > 0
-        {
-            double diff = vMSE_validation[i_iteration] - vMSE_validation[i_iteration-1];
-            if( diff >= 0) // validation MSE rise
-            {
-                if(early_terminateCounter == 0) // when MSE rise first epoch
-                {
-                    m_weight_terminal_l1 = m_weight_l1.clone();
-                    m_weight_terminal_l2 = m_weight_l2.clone();
-                    m_weight_terminal_l3 = m_weight_l3.clone();
-                }
-                early_terminateCounter++;
-                if(early_terminateCounter == m_nTerminalThreshold) // reach terminal condidtion 
-                {
-                    m_weight_l1 = m_weight_terminal_l1;
-                    m_weight_l2 = m_weight_terminal_l2;
-                    m_weight_l3 = m_weight_terminal_l3;
-                    early_terminateCounter = i_iteration;
-                    break;
-                }
-            }
-            else
-            {
-                early_terminateCounter = 0;
-            }
-        }
+//        if(i_iteration > 0)                 // check epoch > 0
+//        {
+//            double diff = vMSE_validation[i_iteration] - vMSE_validation[i_iteration-1];
+//            if( diff >= 0) // validation MSE rise
+//            {
+//                if(early_terminateCounter == 0) // when MSE rise first epoch
+//                {
+//                    m_weight_terminal_l1 = m_weight_l1.clone();
+//                    m_weight_terminal_l2 = m_weight_l2.clone();
+//                    m_weight_terminal_l3 = m_weight_l3.clone();
+//                }
+//                early_terminateCounter++;
+//                if(early_terminateCounter == m_nTerminalThreshold) // reach terminal condidtion 
+//                {
+//                    m_weight_l1 = m_weight_terminal_l1;
+//                    m_weight_l2 = m_weight_terminal_l2;
+//                    m_weight_l3 = m_weight_terminal_l3;
+//                    early_terminateCounter = i_iteration;
+//                    break;
+//                }
+//            }
+//            else
+//            {
+//                early_terminateCounter = 0;
+//            }
+//        }
             
             
         
@@ -332,10 +331,17 @@ void MLP::dataScale()
 {
     cv::Mat rescaledResult(m_data_input.rows, m_nInputs + m_nClasses, CV_64FC1);
     
+    
     // scale input colum
-    for(int i =0; i < m_nInputs; i++)
-        cv::normalize(m_data_input.col(i), rescaledResult.col(i), 0.001, 0.999, cv::NORM_MINMAX, -1, cv::Mat() );
-                   
+    if(m_bRescale)
+    {
+        for(int i =0; i < m_nInputs; i++)
+            cv::normalize(m_data_input.col(i), rescaledResult.col(i), 0.001, 0.999, cv::NORM_MINMAX, -1, cv::Mat() );
+    }
+    else
+        rescaledResult = m_data_input.clone();
+    
+    
     // scale oupput colum
         // begin  2>>1, 4>>0
     rescaledResult.col(m_nInputs) = (m_data_input.col(m_nInputs)-cv::Scalar(4))/-2; 
@@ -362,8 +368,8 @@ double MLP::getAccuracy()
     int n_timesCorrect  = 0;
     for(int i= 0; i < m_data_scaled2test.rows; i++)
     {
-        cv::Mat input = m_data_scaled2train(cv::Range(i, i+1), cv::Range(0, m_nInputs));                
-        cv::Mat output_desired = m_data_scaled2train(cv::Range(i, i+1), cv::Range(m_nInputs, m_data_scaled2train.cols));
+        cv::Mat input = m_data_scaled2test(cv::Range(i, i+1), cv::Range(0, m_nInputs));                
+        cv::Mat output_desired = m_data_scaled2test(cv::Range(i, i+1), cv::Range(m_nInputs, m_data_scaled2test.cols));
         cv::Mat response_L1, response_L2, response_L3;
         response_L1 = input*m_weight_l1;
         transfer(&response_L1);
@@ -378,8 +384,6 @@ double MLP::getAccuracy()
         
          if(max_loc_response == max_loc_desert)
              n_timesCorrect++;
-        
-        //SE(train)
         
     }
     return (double)n_timesCorrect/m_data_scaled2test.rows;

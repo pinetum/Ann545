@@ -37,7 +37,7 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_MomentumAlpha->SetLabel("0.4");
     m_textCtrl_TestDataRatio->SetLabel("0.5");
     m_textCtrl_TerminalRatio->SetLabel("0.1");
-    pathName = "";
+    pathName.Empty();
     m_choice_LearnAdjust->Select(0);
     m_choice_TransferFunc->Select(0);
     
@@ -171,7 +171,7 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
     m_MLP->openSampleFile(pathName);
     
     getParameter();
-    m_MLP->SetParameter(m_checkBox_DataRescale->GetValue(),
+    m_MLP->SetParameter(m_checkBox_DataRescale->IsChecked(),
                         (int)d_nL1, 
                         (int)d_nL2, 
                         d_rateIntial, 
@@ -191,7 +191,7 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
 void MainFrame::OnUpdateUI(wxUpdateUIEvent& event)
 {
     
-    event.Enable(!m_bMLPrunning);
+    event.Enable(!pathName.empty());
 
         
 }

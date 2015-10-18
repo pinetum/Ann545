@@ -46,26 +46,22 @@ public:
     
     
     
-    
-    int         m_nNeuronsL1;               // number of neurons in hidden layer 1
-    int         m_nNeuronsL2;               // number of neurons in hidden layer 2
-    int         m_nInputs;                  // number of network input vector dimension
-    int         m_nClasses;                 // number of network output vector dimension
+    int         m_LearnRateAdjMethod;
+    int         m_ActivationType;
+    int         m_nNeuronsL1;               // # of neurons in hidden layer 1
+    int         m_nNeuronsL2;               // # of neurons in hidden layer 2
+    int         m_nInputs;                  // # of network input vector dimension
+    int         m_nClasses;                 // # of network output vector dimension
     int         m_nTotalIteration;          // epoch
     int         m_nKfold;                   // cross validation (k-fold)
     int         m_nLearningRateShift;       // epoch times: learning rate shift to minimum learning rate
-    
-    int         m_LearnRateAdjMethod;
-    int         m_ActivationType;
-    
-    int         m_nTerminalThreshold;       //
-    
-    bool        m_bRescale;
+    int         m_nTerminalThreshold;       //  m_nTerminalThreshold = m_dTerminalratio * m_nTotalIteration
+    bool        m_bRescale;                 // data rescale?
     double      m_dMomentumAlpha;           // momentum Alpha
-    double      m_dDesiredOutput_rescale;
+    double      m_dDesiredOutput_rescale;   // epsilon
     double      m_dInitalLearningRate;      // inital learning rate
-    double      m_dMinLearningRate;         // minimum learning rate (with )
-    double      m_dTerminalratio;
+    double      m_dMinLearningRate;         // minimum learning rate (only binary Sigmoid method use)
+    double      m_dTerminalratio;           // m_nTerminalThreshold = m_dTerminalratio * m_nTotalIteration
     double      m_dRatioTestingDatas;       // ratio of datas use in Testing phase
     
     void SetParameter(  bool b_dataRescale,
