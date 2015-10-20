@@ -11,7 +11,7 @@ MLP::MLP(wxEvtHandler* pParent)
 {
     m_pHandler                  = pParent;
     m_nKfold                    = 10;
-    m_nInputs                   = 9;
+    m_nInputs                   = 9;//pima 8// cancer//9
     m_nClasses                  = 2;
     m_nNeuronsL1                = 5;
     m_nNeuronsL2                = 5;
@@ -87,7 +87,6 @@ wxThread::ExitCode MLP::Entry(){
     writeMat("inital_W1.txt", &m_weight_l1);
     writeMat("inital_W2.txt", &m_weight_l2);
     writeMat("inital_W3.txt", &m_weight_l3);
-    writeMat("trainingScaledData.txt", &m_data_scaled2train);
     //MSE
     std::vector<double > vMSE_training;
     std::vector<double > vMSE_validation;
@@ -342,6 +341,7 @@ void MLP::dataScale()
         rescaledResult = m_data_input.clone();
     
     
+//    cancer
     // scale oupput colum
         // begin  2>>1, 4>>0
     rescaledResult.col(m_nInputs) = (m_data_input.col(m_nInputs)-cv::Scalar(4))/-2; 
@@ -355,6 +355,22 @@ void MLP::dataScale()
                     rescaledResult.col(m_nInputs+1), 
                     m_dDesiredOutput_rescale, 1 - m_dDesiredOutput_rescale,  // min, max
                     cv::NORM_MINMAX, -1, cv::Mat() );
+
+// pima
+// scale oupput colum
+//    cv::normalize(rescaledResult.col(m_nInputs), 
+//                    rescaledResult.col(m_nInputs), 
+//                    m_dDesiredOutput_rescale, 1 - m_dDesiredOutput_rescale,  // min, max
+//                    cv::NORM_MINMAX, -1, cv::Mat() );
+//        // malignant 4>>1, 2>>0
+//    rescaledResult.col(m_nInputs+1) = (m_data_input.col(m_nInputs)-cv::Scalar(1))*-1; // if 
+//    cv::normalize(rescaledResult.col(m_nInputs+1), 
+//                    rescaledResult.col(m_nInputs+1), 
+//                    m_dDesiredOutput_rescale, 1 - m_dDesiredOutput_rescale,  // min, max
+//                    cv::NORM_MINMAX, -1, cv::Mat() );
+
+
+
     // seperate scaled data to two part (training and testing)
     int n_testDataRows  = m_dRatioTestingDatas*rescaledResult.rows;
     m_data_scaled2test  = rescaledResult.rowRange(0, n_testDataRows).clone();
