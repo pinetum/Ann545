@@ -107,8 +107,8 @@ wxThread::ExitCode MLP::Entry(){
         // leave one out 
         if(m_nKfold < 1)
         {
-            int n_preFoldItems = 1;
-            int n_loopFoldTimes = m_data_scaled2train.rows;
+            n_preFoldItems = 1;
+            n_loopFoldTimes = m_data_scaled2train.rows;
         }
         
             
