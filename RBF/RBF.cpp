@@ -74,7 +74,8 @@ wxThread::ExitCode RBF::Entry(){
     
     
     cv::randu(m_weight, cv::Scalar(-0.4), cv::Scalar(0.4));
-    cv::randu(m_center, cv::Scalar(double(0)), cv::Scalar(double(1)));
+    m_center = m_data_scaled2train(cv::Range(0, m_nNeurons), cv::Range(0, m_nInputs)).clone();
+    shuffelRow(&m_center);
     m_sigma  = cv::Mat(1, m_nNeurons, CV_64F, cv::Scalar((double)1/sqrt(m_nNeurons)));
     
     writeMat("weight.txt", &m_weight);
