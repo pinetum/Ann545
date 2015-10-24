@@ -13,7 +13,7 @@ RBF::RBF(wxEvtHandler* pParent)
     m_nKfold                    = 10;
     m_nInputs                   = 9;//pima 8// cancer//9
     m_nClasses                  = 2;
-    m_nNeurons                = 5;
+    m_nNeurons                  = 5;
     m_nTotalIteration           = 3000;
     m_dMinLearningRate          = 0.05;
     m_nLearningRateShift        = 4000;
@@ -171,7 +171,7 @@ wxThread::ExitCode RBF::Entry(){
 //                    // delta sigma
 
                 
-                delta_sigma = (error*m_weight/sigmaThree).mul(phi_result).mul(normSqure);//  (1*# nurons)
+                delta_sigma = learnRate*(error*m_weight/sigmaThree).mul(phi_result).mul(normSqure);//  (1*# nurons)
                 
                 
                     // delta center
@@ -199,6 +199,7 @@ wxThread::ExitCode RBF::Entry(){
                 {
                     delta_center.row(i) = temp.at<double>(0, i)*(input-m_center.row(i));
                 }
+                delta_center = delta_center * learnRate;
                 //writeMat("deltaCenter.txt", &delta_center);
                 //writeMat("Center.txt", &m_center);
                 
@@ -354,7 +355,7 @@ void RBF::dataScale()
                     cv::NORM_MINMAX, -1, cv::Mat() );
 
 // pima
-// scale oupput colum
+    // scale oupput colum
 //    cv::normalize(rescaledResult.col(m_nInputs), 
 //                    rescaledResult.col(m_nInputs), 
 //                    m_dDesiredOutput_rescale, 1 - m_dDesiredOutput_rescale,  // min, max
