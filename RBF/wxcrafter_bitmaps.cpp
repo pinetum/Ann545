@@ -42,6 +42,6 @@ void wxC9ED9InitBitmapResources()
         else wxFileSystem::AddHandler(new wxMemoryFSHandlerBase);
     }
 
-    XRC_ADD_FILE(wxT("XRC_resource/wxcrafter_bitmaps.cpp$_Users_Pinetum_Dropbox_元智課程資料_研究所課程_類神經網路_hw1_s1010329_MLP_wxcrafter_bitmaps.xrc"), xml_res_file_0, xml_res_size_0, wxT("text/xml"));
-    wxXmlResource::Get()->Load(wxT("memory:XRC_resource/wxcrafter_bitmaps.cpp$_Users_Pinetum_Dropbox_元智課程資料_研究所課程_類神經網路_hw1_s1010329_MLP_wxcrafter_bitmaps.xrc"));
+    XRC_ADD_FILE(wxT("XRC_resource/wxcrafter_bitmaps.cpp$_Users_Pinetum_Dropbox_元智課程資料_研究所課程_類神經網路_s1010329_RBF_wxcrafter_bitmaps.xrc"), xml_res_file_0, xml_res_size_0, wxT("text/xml"));
+    wxXmlResource::Get()->Load(wxT("memory:XRC_resource/wxcrafter_bitmaps.cpp$_Users_Pinetum_Dropbox_元智課程資料_研究所課程_類神經網路_s1010329_RBF_wxcrafter_bitmaps.xrc"));
 }
