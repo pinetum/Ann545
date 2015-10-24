@@ -67,7 +67,6 @@ public:
                         double d_MinLearningRate,
                         int n_LearningRateShift,
                         int n_TotalIteration,
-                        double d_MomentumAlpha,
                         int n_kFold,
                         double d_testDataRatio,
                         double d_Terminalratio,

@@ -34,12 +34,12 @@ MainFrame::MainFrame(wxWindow* parent)
     m_textCtrl_LearnRateMin->SetLabel("0.001");
     m_textCtrl_LearnRateShift->SetLabel("500");
     m_textCtrl_KFold->SetLabel("10");
-    m_textCtrl_MomentumAlpha->SetLabel("0.4");
+
     m_textCtrl_TestDataRatio->SetLabel("0.5");
     m_textCtrl_TerminalRatio->SetLabel("0.1");
     pathName.Empty();
     m_choice_LearnAdjust->Select(0);
-    m_choice_TransferFunc->Select(0);
+
     
     
 }
@@ -155,13 +155,12 @@ void MainFrame::OnLoadData(wxCommandEvent& event)
 }
 void MainFrame::getParameter(){
     m_textCtrl_L1neurons->GetValue().ToDouble(&d_nL1);
-    //m_textCtrl_L2neurons->GetValue().ToDouble(&d_nL2);
     m_textCtrl_LearnRateInital->GetValue().ToDouble(&d_rateIntial);
     m_textCtrl_LearnRateMin->GetValue().ToDouble(&d_rateMin);
     m_textCtrl_IterationTimes->GetValue().ToDouble(&d_iteration);
     m_textCtrl_LearnRateShift->GetValue().ToDouble(&d_rateShift);
     m_textCtrl_KFold->GetValue().ToDouble(&d_nkFold);
-    m_textCtrl_MomentumAlpha->GetValue().ToDouble(&d_momentumAlpha);
+    
     m_textCtrl_TestDataRatio->GetValue().ToDouble(&d_testDataRatio);
     m_textCtrl_TerminalRatio->GetValue().ToDouble(&d_terminalRatio);
 }
@@ -176,8 +175,7 @@ void MainFrame::OnTrainModel(wxCommandEvent& event)
                         d_rateIntial, 
                         d_rateMin, 
                         d_rateShift, 
-                        d_iteration, 
-                        d_momentumAlpha,
+                        d_iteration,
                         (int)d_nkFold,
                         d_testDataRatio,
                         d_terminalRatio,

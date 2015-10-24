@@ -53,15 +53,11 @@ protected:
     wxTextCtrl* m_textCtrl_IterationTimes;
     wxStaticText* m_staticText129;
     wxTextCtrl* m_textCtrl_TestDataRatio;
-    wxStaticText* m_staticText139;
-    wxTextCtrl* m_textCtrl_MomentumAlpha;
     wxStaticText* m_staticText141;
     wxTextCtrl* m_textCtrl_TerminalRatio;
     wxCheckBox* m_checkBox_DataRescale;
     wxStaticText* m_staticText111;
     wxChoice* m_choice_LearnAdjust;
-    wxStaticText* m_staticText107;
-    wxChoice* m_choice_TransferFunc;
     wxRichTextCtrl* m_richTextCtrl;
     wxStaticText* m_staticTextPg;
     wxGauge* m_gaugePg;
@@ -99,15 +95,11 @@ public:
     wxTextCtrl* GetTextCtrl_IterationTimes() { return m_textCtrl_IterationTimes; }
     wxStaticText* GetStaticText129() { return m_staticText129; }
     wxTextCtrl* GetTextCtrl_TestDataRatio() { return m_textCtrl_TestDataRatio; }
-    wxStaticText* GetStaticText139() { return m_staticText139; }
-    wxTextCtrl* GetTextCtrl_MomentumAlpha() { return m_textCtrl_MomentumAlpha; }
     wxStaticText* GetStaticText141() { return m_staticText141; }
     wxTextCtrl* GetTextCtrl_TerminalRatio() { return m_textCtrl_TerminalRatio; }
     wxCheckBox* GetCheckBox_DataRescale() { return m_checkBox_DataRescale; }
     wxStaticText* GetStaticText111() { return m_staticText111; }
     wxChoice* GetChoice_LearnAdjust() { return m_choice_LearnAdjust; }
-    wxStaticText* GetStaticText107() { return m_staticText107; }
-    wxChoice* GetChoice_TransferFunc() { return m_choice_TransferFunc; }
     wxRichTextCtrl* GetRichTextCtrl() { return m_richTextCtrl; }
     wxStaticText* GetStaticTextPg() { return m_staticTextPg; }
     wxGauge* GetGaugePg() { return m_gaugePg; }

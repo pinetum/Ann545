@@ -29,7 +29,7 @@ void RBF::SetParameter(bool b_dataRescale,
                         double d_MinLearningRate,
                         int n_LearningRateShift,
                         int n_TotalIteration,
-                        double d_MomentumAlpha,
+                        
                         int n_kFold,
                         double d_testDataRatio,
                         double d_Terminalratio,
@@ -39,7 +39,6 @@ void RBF::SetParameter(bool b_dataRescale,
     m_nNeurons              = n_nuron;
     m_bRescale              = b_dataRescale;
     m_dRatioTestingDatas    = d_testDataRatio;
-    m_dMomentumAlpha        = d_MomentumAlpha;
     m_nTotalIteration       = n_TotalIteration;
     m_dMinLearningRate      = d_MinLearningRate;
     m_LearnRateAdjMethod    = LearnRateAdjMethod;
@@ -72,10 +71,10 @@ wxThread::ExitCode RBF::Entry(){
     m_center.create(m_nNeurons, m_nInputs, CV_64F);
     m_sigma.create(1, m_nNeurons, CV_64F);
     
+    shuffelRow(&m_data_scaled2train);
     
     cv::randu(m_weight, cv::Scalar(-0.4), cv::Scalar(0.4));
     m_center = m_data_scaled2train(cv::Range(0, m_nNeurons), cv::Range(0, m_nInputs)).clone();
-    shuffelRow(&m_center);
     m_sigma  = cv::Mat(1, m_nNeurons, CV_64F, cv::Scalar((double)1/sqrt(m_nNeurons)));
     
     writeMat("weight.txt", &m_weight);
@@ -93,19 +92,23 @@ wxThread::ExitCode RBF::Entry(){
     for(int i_iteration = 0; i_iteration < m_nTotalIteration; i_iteration++)
     {
         // shuffel
-        shuffelRow(&m_data_scaled2train);
+        //shuffelRow(&m_data_scaled2train);
         
         
         double dMSE_training_epoch    = 0;
         double dMSE_validation_epoch  = 0;
         
-        int n_preFoldItems = m_data_scaled2train.rows/m_nKfold;
-        int n_loopFoldTimes = m_nKfold;
+        int n_preFoldItems, n_loopFoldTimes;
         // leave one out 
         if(m_nKfold < 1)
         {
             n_preFoldItems = 1;
             n_loopFoldTimes = m_data_scaled2train.rows;
+        }
+        else
+        {
+            n_preFoldItems = m_data_scaled2train.rows/m_nKfold;
+            n_loopFoldTimes = m_nKfold;
         }
         
             

@@ -141,17 +141,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer49->Add(m_textCtrl_TestDataRatio, 0, wxALL, 5);
     
-    m_staticText139 = new wxStaticText(m_mainPanel, wxID_ANY, _("Momentum \nForgetting factor"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizer49->Add(m_staticText139, 0, wxALL, 5);
-    
-    m_textCtrl_MomentumAlpha = new wxTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrl_MomentumAlpha->SetHint(wxT(""));
-    #endif
-    
-    flexGridSizer49->Add(m_textCtrl_MomentumAlpha, 0, wxALL, 5);
-    
     m_staticText141 = new wxStaticText(m_mainPanel, wxID_ANY, _("Terminal Ratio"), wxDefaultPosition, wxSize(-1,-1), 0);
     
     flexGridSizer49->Add(m_staticText141, 0, wxALL, 5);
@@ -185,17 +174,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_choice_LearnAdjust = new wxChoice(m_mainPanel, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_choice_LearnAdjustArr, 0);
     
     flexGridSizer117->Add(m_choice_LearnAdjust, 0, wxALL, 5);
-    
-    m_staticText107 = new wxStaticText(m_mainPanel, wxID_ANY, _("Activation function"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizer117->Add(m_staticText107, 0, wxALL, 5);
-    
-    wxArrayString m_choice_TransferFuncArr;
-    m_choice_TransferFuncArr.Add(wxT("Binary Sigmoid"));
-    m_choice_TransferFuncArr.Add(wxT("bipolar sigmoid"));
-    m_choice_TransferFunc = new wxChoice(m_mainPanel, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_choice_TransferFuncArr, 0);
-    
-    flexGridSizer117->Add(m_choice_TransferFunc, 0, wxALL, 5);
     
     m_richTextCtrl = new wxRichTextCtrl(m_mainPanel, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,200), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
     
@@ -257,11 +235,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_textCtrl_LearnRateMin->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_IterationTimes->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_TestDataRatio->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
-    m_textCtrl_MomentumAlpha->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_TerminalRatio->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_checkBox_DataRescale->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_choice_LearnAdjust->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
-    m_choice_TransferFunc->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     this->Connect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     
@@ -279,11 +255,9 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_textCtrl_LearnRateMin->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_IterationTimes->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_TestDataRatio->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
-    m_textCtrl_MomentumAlpha->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_textCtrl_TerminalRatio->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_checkBox_DataRescale->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     m_choice_LearnAdjust->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
-    m_choice_TransferFunc->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateParameterUI), NULL, this);
     this->Disconnect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     
