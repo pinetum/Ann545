@@ -1,0 +1,5 @@
+*.d
+.codelite
+.clang
+Debug
+Release
