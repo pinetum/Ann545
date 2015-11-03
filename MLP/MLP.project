@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="MLP" InternalType="GUI">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
+    <Plugin Name="CMakePlugin">
+      <![CDATA[[{
+  "name": "Debug",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }]]]>
+    </Plugin>
+  </Plugins>
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
@@ -28,14 +54,15 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="Debug" CompilerType="clang( based on LLVM 3.6.0svn )" DebuggerType="LLDB Debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug" CompilerType="GCC" DebuggerType="LLDB Debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;$(shell /usr/local/bin/wx-config --cflags --debug)" C_Options="-g;-O0;" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="/usr/local/include"/>
-        <IncludePath Value="/usr/local/Cellar/libiomp/20150227/include/libiomp"/>
+        <IncludePath Value="/usr/local/include/libiomp"/>
       </Compiler>
       <Linker Options="$(shell /usr/local/bin/wx-config --libs --debug)" Required="yes">
         <LibraryPath Value="/usr/local/lib"/>
+        <LibraryPath Value="/Users/QT/src/opencv-3.0.0/build-release/lib"/>
         <Library Value="libopencv_calib3d.3.0.0.dylib"/>
         <Library Value="libopencv_imgproc.3.0.0.dylib"/>
         <Library Value="libopencv_superres.3.0.0.dylib"/>
@@ -132,7 +159,7 @@
       <Compiler Options="-O3;-fopenmp;$(shell /usr/local/bin/wx-config --cflags)" C_Options="-O3" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="/usr/local/include"/>
-        <IncludePath Value="/usr/local/Cellar/libiomp/20150227/include/libiomp"/>
+        <IncludePath Value="/usr/local/include/libiomp"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
       <Linker Options="$(shell /usr/local/bin/wx-config --libs)" Required="yes">

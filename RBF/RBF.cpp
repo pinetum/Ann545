@@ -129,7 +129,6 @@ wxThread::ExitCode RBF::Entry(){
             
             
             // training for loop
-            //for(int i_dataRows = 0; i_dataRows < 1; i_dataRows++)
             for(int i_dataRows = 0; i_dataRows < m_data_scaled2train.rows; i_dataRows++)
             {
                 
@@ -168,35 +167,11 @@ wxThread::ExitCode RBF::Entry(){
                 
                 // update parameter (sequential update)
                 double learnRate = getLearningRate(i_iteration);
-//                    // delta weight
-                
-               
+                    // delta weight
                 delta_weight = learnRate*error.t()*phi_result;
-//                    // delta sigma
-
-                
+                    // delta sigma                
                 delta_sigma = learnRate*(error*m_weight/sigmaThree).mul(phi_result).mul(normSqure);//  (1*# nurons)
-                
-                
                     // delta center
-                //delta_center.create(m_center.rows, m_center.cols, CV_64F);
-//                delta_center = (error*m_weight/sigmaSqure).mul(phi_result);
-                
-                
-
-//                wxLogMessage(wxString::Format("%d %d, %d %d, %d, %d",   
-//                                                m_center.rows,
-//                                                m_center.cols,
-//                                                delta_center.rows,
-//                                                delta_center.cols,
-//                                                phi_result.rows,
-//                                                phi_result.cols));
-//                
-//                
-
-                
-
-
                 cv::Mat temp = (error*m_weight/sigmaSqure).mul(phi_result);
                 delta_center.create(m_center.rows, m_center.cols, CV_64F);
                 for(int i =0; i < delta_center.rows; i++)
@@ -204,15 +179,10 @@ wxThread::ExitCode RBF::Entry(){
                     delta_center.row(i) = temp.at<double>(0, i)*(input-m_center.row(i));
                 }
                 delta_center = delta_center * learnRate;
-                //writeMat("deltaCenter.txt", &delta_center);
-                //writeMat("Center.txt", &m_center);
                 
                 m_center    += delta_center;
                 m_weight    += delta_weight;
                 m_sigma     += delta_sigma;
-                
-                
-                
                 // update parameter end
             } // training for loop end
             
@@ -227,8 +197,6 @@ wxThread::ExitCode RBF::Entry(){
                 cv::Mat sigmaThree, sigmaSqure;
                 cv::pow(m_sigma, 2, sigmaSqure);
                 //output_response;
-                
-                
                 mNorm2(norm, input, m_center);
                 cv::pow(norm, 2, normSqure);
                 cv::exp(-1*normSqure/sigmaSqure, phi_result);
