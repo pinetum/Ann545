@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="s1010329" Database="">
   <Project Name="MLP" Path="MLP/MLP.project" Active="No"/>
-  <Project Name="RBF" Path="RBF/RBF.project" Active="Yes"/>
+  <Project Name="RBF" Path="RBF/RBF.project" Active="No"/>
+  <Project Name="SOM" Path="SOM/SOM.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="MLP" ConfigName="Debug"/>
       <Project Name="RBF" ConfigName="Debug"/>
+      <Project Name="SOM" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="MLP" ConfigName="Release"/>
       <Project Name="RBF" ConfigName="Release"/>
+      <Project Name="SOM" ConfigName="Release"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Debug-Win" Selected="no">
+    <WorkspaceConfiguration Name="Debug-Win" Selected="yes">
       <Project Name="MLP" ConfigName="Debug-Win"/>
       <Project Name="RBF" ConfigName="Debug"/>
+      <Project Name="SOM" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release-Win" Selected="yes">
       <Project Name="MLP" ConfigName="Release-Win"/>
       <Project Name="RBF" ConfigName="Debug"/>
+      <Project Name="SOM" ConfigName="Debug"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

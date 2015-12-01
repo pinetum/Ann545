@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo "----------Building project:[ RBF - Debug ]----------"
-	@cd "RBF" && "$(MAKE)" -f  "RBF.mk"
+	@echo "----------Building project:[ SOM - Debug ]----------"
+	@cd "SOM" && "$(MAKE)" -f  "SOM.mk"
 clean:
-	@echo "----------Cleaning project:[ RBF - Debug ]----------"
-	@cd "RBF" && "$(MAKE)" -f  "RBF.mk" clean
+	@echo "----------Cleaning project:[ SOM - Debug ]----------"
+	@cd "SOM" && "$(MAKE)" -f  "SOM.mk" clean

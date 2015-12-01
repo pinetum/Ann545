@@ -3,7 +3,6 @@
 
 
 
-
 const char str_learnRateAdj[3][30] = {"Search then converge", "Exponential decay", "Binary Sigmoid"};
 const char str_activation[2][30] = {"Binary Sigmoid", "bipolar sigmoid"};
 
