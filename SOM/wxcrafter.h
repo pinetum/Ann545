@@ -37,6 +37,7 @@ protected:
     wxTextCtrl* m_textCtrl_IterationTimes;
     wxStaticText* m_staticText_Neurons;
     wxTextCtrl* m_textCtrl_weights;
+    wxButton* m_button37;
     wxMenuBar* m_menuBar;
     wxMenu* m_name6;
     wxMenuItem* m_menuItem7;
@@ -49,6 +50,7 @@ protected:
     virtual void OnUpdateSquare(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnBtnTriangle(wxCommandEvent& event) { event.Skip(); }
     virtual void OnUpdateTriangle(wxUpdateUIEvent& event) { event.Skip(); }
+    virtual void OnBtnStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
 
@@ -59,6 +61,7 @@ public:
     wxTextCtrl* GetTextCtrl_IterationTimes() { return m_textCtrl_IterationTimes; }
     wxStaticText* GetStaticText_Neurons() { return m_staticText_Neurons; }
     wxTextCtrl* GetTextCtrl_weights() { return m_textCtrl_weights; }
+    wxButton* GetButton37() { return m_button37; }
     wxPanel* GetMainPanel() { return m_mainPanel; }
     wxMenuBar* GetMenuBar() { return m_menuBar; }
     wxToolBar* GetMainToolbar() { return m_mainToolbar; }

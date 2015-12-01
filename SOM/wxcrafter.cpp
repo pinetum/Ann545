@@ -33,19 +33,19 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizer11 = new wxBoxSizer(wxVERTICAL);
     m_mainPanel->SetSizer(boxSizer11);
     
-    m_button13 = new wxButton(m_mainPanel, wxID_ANY, _("Square"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    boxSizer11->Add(m_button13, 0, wxALL, 5);
-    
-    m_button15 = new wxButton(m_mainPanel, wxID_ANY, _("Triangle"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    boxSizer11->Add(m_button15, 0, wxALL, 5);
-    
     wxFlexGridSizer* flexGridSizer27 = new wxFlexGridSizer(0, 2, 0, 0);
     flexGridSizer27->SetFlexibleDirection( wxBOTH );
     flexGridSizer27->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
     boxSizer11->Add(flexGridSizer27, 1, wxALL|wxEXPAND, 5);
+    
+    m_button13 = new wxButton(m_mainPanel, wxID_ANY, _("Square"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer27->Add(m_button13, 0, wxALL, 5);
+    
+    m_button15 = new wxButton(m_mainPanel, wxID_ANY, _("Triangle"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer27->Add(m_button15, 0, wxALL, 5);
     
     m_staticText29 = new wxStaticText(m_mainPanel, wxID_ANY, _("Iteration Times"), wxDefaultPosition, wxSize(-1,-1), 0);
     
@@ -68,6 +68,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     flexGridSizer27->Add(m_textCtrl_weights, 0, wxALL, 5);
+    
+    m_button37 = new wxButton(m_mainPanel, wxID_ANY, _("STOP!"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizer27->Add(m_button37, 0, wxALL, 5);
     
     m_menuBar = new wxMenuBar(0);
     this->SetMenuBar(m_menuBar);
@@ -109,6 +113,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_button13->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateSquare), NULL, this);
     m_button15->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBtnTriangle), NULL, this);
     m_button15->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateTriangle), NULL, this);
+    m_button37->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBtnStop), NULL, this);
     this->Connect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     
@@ -120,6 +125,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_button13->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateSquare), NULL, this);
     m_button15->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBtnTriangle), NULL, this);
     m_button15->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnUpdateTriangle), NULL, this);
+    m_button37->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBtnStop), NULL, this);
     this->Disconnect(m_menuItem7->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     

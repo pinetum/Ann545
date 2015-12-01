@@ -16,11 +16,12 @@ public:
     SOM* p_Tsom;
     cv::Mat img ;
     cv::Mat readData(int data);
-    void drawResults(cv::Mat weights, cv::Mat &img, wxString msg);
+    void drawResults(cv::Mat &weights, cv::Mat &img, wxString msg);
     void drawPts(cv::Mat &ptsData, cv::Mat &img);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 protected:
+    virtual void OnBtnStop(wxCommandEvent& event);
     virtual void OnBtnSquare(wxCommandEvent& event);
     virtual void OnBtnTriangle(wxCommandEvent& event);
     virtual void OnUpdateSquare(wxUpdateUIEvent& event);
