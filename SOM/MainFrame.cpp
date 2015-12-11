@@ -66,7 +66,7 @@ void MainFrame::drawResults(cv::Mat& weights, cv::Mat &img, wxString msg)
         }
     }
     cv::putText(img, std::string(msg.mb_str()),cv::Point(20,20), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255));
-
+    
     
 }
 void MainFrame::OnExit(wxCommandEvent& event)
@@ -137,6 +137,9 @@ void MainFrame::OnSOMUpdate(wxThreadEvent& evt)
     img = cv::Mat::zeros(CONTENT_SIZE, CONTENT_SIZE, CV_8UC1);
     weight = weight * CONTENT_SIZE;
     drawResults(weight, img, evt.GetString());
+    
+    
+    cv::imwrite(std::string(wxString::Format("/Users/QT/Downloads/SOM_IMAGE/%d.png", iteration).mb_str()), img);
     cv::imshow("result", img);
 }
 void MainFrame::OnSOMComplete(wxThreadEvent& evt)

@@ -1,6 +1,9 @@
 #include "SOM.h"
 #include "wx/log.h"
 #include "math.h"
+#include "stdio.h"
+
+
 SOM::SOM(wxEvtHandler* pParent, int weightSize, int iterationTimes, cv::Mat input)
 {
     handler = pParent;
@@ -14,21 +17,33 @@ SOM::~SOM()
 }
 void SOM::updateParameter(int epoch)
 {
+    //講義上的方法
+//    d_learningRate = 1 /(1+(double)epoch/100);
+//    double sigma = n_weightSize*0.5;
+//    double lamda = 1.0*n_iterationTimes/log(sigma);
+//    d_bandwith =  sigma*exp(-1*epoch/lamda)*0.9;
+//    
     
-    d_learningRate = 1.1 /(1+(double)epoch/(n_iterationTimes*0.8));
+  
+    double initalSigma = sqrt(n_weightSize*n_weightSize)*0.5;
     
     
-    double sigma = n_weightSize*0.5;
-    double lamda = 1.0*n_iterationTimes/log(sigma);
-    d_bandwith =  sigma*exp(-1*epoch/lamda)*0.9;
     
-    
+    d_learningRate = 1 /(1+(double)epoch/100);
+    d_bandwith =  (initalSigma - sqrt(2)) / (1+exp(0.3*(epoch - 10)) ) + sqrt(2);
 
+    
     
 }
 wxThread::ExitCode SOM::Entry(){
     wxThreadEvent* evt = new wxThreadEvent(wxEVT_COMMAND_SOM_START);
     wxQueueEvent(handler, evt);
+    
+    
+    //record mu and sigma
+    FILE* fp_mu = fopen("mu.csv", "w");
+    FILE* fp_sigma = fopen("sigma.csv", "w");
+    
     
     // inital weights
     weights = cv::Mat(n_weightSize, n_weightSize, CV_64FC2);
@@ -89,6 +104,7 @@ wxThread::ExitCode SOM::Entry(){
                     //wxLogMessage(wxString::Format("%f", dist));
                     if( dist > d_bandwith)
                         continue;
+                    //double influence = exp(-(dist)/2/d_bandwith);
                     double influence = exp(-(dist)/2*d_bandwith);
                     //wxLogMessage(wxString::Format("influence:%lf", influence));
                     cv::Vec2d updateNeuron = weights.at<cv::Vec2d>(i_neuronsR, i_neuronsC);
@@ -103,21 +119,28 @@ wxThread::ExitCode SOM::Entry(){
         
         
         
-        
-        evt = new wxThreadEvent(wxEVT_COMMAND_SOM_UPDATE);
-        evt->SetPayload(weights.clone());
-        evt->SetInt(i_epoch);
-        evt->SetString(wxString::Format("%d LR:%lf, BW:%lf",i_epoch, d_learningRate, d_bandwith));
-        wxQueueEvent(handler, evt);
+        if(1)// (i_epoch+1) % 10 == 0 || i_epoch < 20)
+        {
+            evt = new wxThreadEvent(wxEVT_COMMAND_SOM_UPDATE);
+            evt->SetPayload(weights.clone());
+            evt->SetInt(i_epoch);
+            evt->SetString(wxString::Format("epoch:%d mu:%lf, sigma:%lf",i_epoch, d_learningRate, d_bandwith));
+            wxQueueEvent(handler, evt);
+            
+        }
         
         if(TestDestroy())
             break;
+        
+        fprintf(fp_mu, "%lf\n", d_learningRate);
+        fprintf(fp_sigma, "%lf\n", d_bandwith);
         
     }//epoch loop
     writeMat(wxString::Format("/Users/QT/Downloads/www/Weight.txt"), &weights);
     
     
-    
+    fclose(fp_mu);
+    fclose(fp_sigma);
     
     
     evt = new wxThreadEvent(wxEVT_COMMAND_SOM_COMPLETE);
